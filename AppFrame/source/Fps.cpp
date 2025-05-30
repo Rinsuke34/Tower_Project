@@ -30,7 +30,7 @@ void Fps::FpsAdjustment()
 void Fps::DrawFPS()
 {
 	/* フレームレート描画 */
-	DrawFormatStringToHandle(0, 0, GetColor(255, 255, 255), giFontHandle_Small, "FPS:%d", giNowFps);
+	DrawFormatString(0, 0, GetColor(255, 255, 255), "FPS:%d", giNowFps);
 }
 
 // 時刻計算

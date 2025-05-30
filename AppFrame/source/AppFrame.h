@@ -26,12 +26,3 @@
 
 /* オブジェクト系 */
 #include "ObjectBase.h"
-#include "CharacterBase.h"
-#include "EffectBase.h"
-#include "ActorBase.h"
-#include "PlatformBase.h"
-#include "BulletBase.h"
-#include "EnemyBase.h"
-#include "SkySqhereBase.h"
-#include "EffectItemBase.h"
-#include "PickUpItemBase.h"

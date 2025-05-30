@@ -26,7 +26,5 @@ class DataListServer
 		/* 関数 */
 		void	DeleteAllDataList();			// データリスト削除(データリスト一覧内のすべてのデータリストに対して)
 
-		/* 変数 */
-
 	protected:
 };

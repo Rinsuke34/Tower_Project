@@ -23,12 +23,8 @@ class SceneBase
 		bool	bGetLowerLayerProcessFlg()	{ return this->bLowerLayerStopFlg; }		// 下層レイヤー計算停止フラグを取得
 		std::string	stGetSceneName()		{ return this->stSceneName; }				// シーン名称を取得
 
-		std::mutex mtx;						// 共有リソースへのアクセス保護用mutex
-
 	private:
 	protected:
-		/* 関数 */
-
 		/* 変数 */
 		// SceneServerでの管理用データ
 		std::string		stSceneName;					// シーン名称

@@ -15,13 +15,6 @@
 /* プログラム状態 */
 extern bool gbEndFlg;	// プログラム終了フラグ
 
-/* フォント関連 */
-extern int giFontHandle_Small;					// フォントハンドル(マキナス/通常サイズ)
-extern int giFontHandle_Medium;					// フォントハンドル(マキナス/中サイズ)
-extern int giFontHandle_Large;					// フォントハンドル(マキナス/大サイズ)
-extern int giFontHandle_NotoSerifJP_Medium;		// フォントハンドル(のとせりふ/セリフテキスト用)
-extern int giFontHandle_NotoSerifJP_SemiBold;	// フォントハンドル(のとせりふ/ネームタグ、オプション用)
-
 /* プレイヤーの入力情報 */
 extern Struct_Input::PLAYER_INPUT_JOYPAD			gstJoypadInputData;			// ジョイパッド
 extern Struct_Input::PLAYER_INPUT_KEYBOARD_MOUSE	gstKeyboardInputData;		// キーボード＆マウス
@@ -42,5 +35,3 @@ extern bool gbDrawSceneListFlg;					// シーンリストの描写
 extern bool	gbDrawDatalistFlg;					// プレイヤーステータスの描写
 extern bool gbDrawFpsFlg;						// フレームレートの描写
 
-/* ローディング関連 */
-extern bool gbNowLoadingFlg;					// ロード中フラグ

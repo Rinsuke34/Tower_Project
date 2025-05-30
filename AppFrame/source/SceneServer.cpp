@@ -92,7 +92,7 @@ void SceneServer::AddSceneReservation(SceneBase* NewScene)
 
 		/* ロードシーンの追加 */
 		// ※共通のAppFlameを使用するため各プログラムに応じたシーンに設定する
-		SCENE_SET::SetLoadScene();
+		//SCENE_SET::SetLoadScene();
 	}
 
 	/* 追加予定のシーンリストにシーンを追加する */

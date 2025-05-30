@@ -106,12 +106,12 @@ void Main::MainInit()
 	/* データリストサーバーを作成 */
 	gpDataListServer = new DataListServer();
 
-	/* プロジェクト初期化処理 */
-	PROJECT_INIT::Init();
+	///* プロジェクト初期化処理 */
+	//PROJECT_INIT::Init();
 
-	/* シーンを初期状態に設定 */
-	// ※共通のAppFlameを使用するため各プログラムに応じたシーンに設定する
-	SCENE_SET::SetFastScene();
+	///* シーンを初期状態に設定 */
+	//// ※共通のAppFlameを使用するため各プログラムに応じたシーンに設定する
+	//SCENE_SET::SetFastScene();
 
 	/* Z深度設定 */
 	SetZBufferBitDepth(SCREEN_Z_BUFFER_BIT_DEPTH);
@@ -132,10 +132,6 @@ void Main::MainEnd()
 	/* データリストサーバーを削除する */
 	delete gpDataListServer;
 
-	/* フォントデータを削除する */
-	DeleteFontToHandle(giFontHandle_Small);
-	DeleteFontToHandle(giFontHandle_Medium);
-	DeleteFontToHandle(giFontHandle_Large);
 
 	/* DXライブラリの使用を終了する */
 	DxLib_End();

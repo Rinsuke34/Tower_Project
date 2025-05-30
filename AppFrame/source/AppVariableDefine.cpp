@@ -7,13 +7,6 @@
 /* プログラム状態 */
 bool gbEndFlg	= false;	// プログラム終了フラグ
 
-/* フォント関連 */
-int giFontHandle_Small					= 0;	// フォントハンドル(マキナス/通常サイズ)
-int giFontHandle_Medium					= 0;	// フォントハンドル(マキナス/中サイズ)
-int giFontHandle_Large					= 0;	// フォントハンドル(マキナス/大サイズ)
-int giFontHandle_NotoSerifJP_Medium		= 0;	// フォントハンドル(のとせりふ/セリフテキスト用)
-int giFontHandle_NotoSerifJP_SemiBold	= 0;	// フォントハンドル(のとせりふ/ネームタグ、オプション用)
-
 /* プレイヤーの入力情報 */
 Struct_Input::PLAYER_INPUT_JOYPAD			gstJoypadInputData;					// ジョイパッド
 Struct_Input::PLAYER_INPUT_KEYBOARD_MOUSE	gstKeyboardInputData;				// キーボード＆マウス
@@ -33,6 +26,3 @@ int	giNowFps	= 0;						// 現在のフレームレート
 bool gbDrawSceneListFlg		= false;		// シーンリストの描写
 bool gbDrawDatalistFlg		= false;		// データリストの描写
 bool gbDrawFpsFlg			= true;			// フレームレートの描写
-
-/* ローディング関連 */
-bool gbNowLoadingFlg		= false;		// ロード中フラグ
