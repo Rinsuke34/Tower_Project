@@ -5,7 +5,7 @@
 #include <string>
 
 /* AppFrameで使用する関数の宣言 */
-/*
+
 // シーンの設定
 namespace SCENE_SET
 {
@@ -19,7 +19,7 @@ namespace PROJECT_INIT
 {
 	void	Init();				// プロジェクト初期化処理
 }
-*/
+
 // 汎用計算系
 namespace PUBLIC_PROCESS
 {

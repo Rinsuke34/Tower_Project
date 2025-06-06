@@ -8,7 +8,7 @@
 #pragma comment(lib,"AppFrame.lib")
 
 /* ƒ‰ƒCƒuƒ‰ƒŠ */
-#include "DxLib.h"
+#include <DxLib.h>
 
 /* ’è‹` */
 #include "AppConstantDefine.h"

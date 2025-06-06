@@ -13,5 +13,13 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ソース ファイル\定義">
+      <UniqueIdentifier>{ef8d9c03-9ce0-4002-8d8e-540243fae094}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\AppFunctionDefine.cpp">
+      <Filter>ソース ファイル\定義</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
