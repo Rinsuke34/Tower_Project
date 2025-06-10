@@ -2,13 +2,17 @@
 
 #include "AppFrame.h"
 
+/* シーン */
+#include "Scene_Title.h"
+
 // シーンの設定
 namespace SCENE_SET
 {
 	// ゲーム起動時のシーンをセット
 	void	SetFastScene()
 	{
-
+		/* シーン"タイトル"をセット */
+		gpSceneServer->AddSceneReservation(new Scene_Title());
 	}
 
 	// ロードシーンをセット

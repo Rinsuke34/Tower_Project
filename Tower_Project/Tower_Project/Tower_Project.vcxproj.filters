@@ -16,10 +16,45 @@
     <Filter Include="ソース ファイル\定義">
       <UniqueIdentifier>{ef8d9c03-9ce0-4002-8d8e-540243fae094}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\オブジェクト">
+      <UniqueIdentifier>{9899b59f-9472-44e0-a9a9-4b6edc88f43f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\シーン">
+      <UniqueIdentifier>{e5504f25-eae7-44f9-9f80-e7540f4aceb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\データリスト">
+      <UniqueIdentifier>{3c09b8b2-42a3-4bf6-9ade-9507d4c1be42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\定義">
+      <UniqueIdentifier>{65f19b0c-5557-4b76-ac85-30b966bb071c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\オブジェクト">
+      <UniqueIdentifier>{372ac541-a257-47a9-b598-35b3a07ddef3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\シーン">
+      <UniqueIdentifier>{55c4f246-59e5-4c23-99ba-a0c7fdbe1ce7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\データリスト">
+      <UniqueIdentifier>{4ba56a0f-0665-4db0-af4e-724cccdac336}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\シーン\タイトル">
+      <UniqueIdentifier>{d888ede9-00bc-4984-b847-e3c66fec7e38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\シーン\タイトル">
+      <UniqueIdentifier>{5aa30eea-750d-4b94-876d-6ea3e50331ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\AppFunctionDefine.cpp">
       <Filter>ソース ファイル\定義</Filter>
     </ClCompile>
+    <ClCompile Include="source\Scene_Title.cpp">
+      <Filter>ソース ファイル\シーン\タイトル</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\Scene_Title.h">
+      <Filter>ヘッダー ファイル\シーン\タイトル</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
