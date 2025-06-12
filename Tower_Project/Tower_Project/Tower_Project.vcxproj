@@ -21,9 +21,11 @@
   <ItemGroup>
     <ClCompile Include="source\AppFunctionDefine.cpp" />
     <ClCompile Include="source\Scene_Title.cpp" />
+    <ClCompile Include="source\Scene_World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Scene_Title.h" />
+    <ClInclude Include="source\Scene_World.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

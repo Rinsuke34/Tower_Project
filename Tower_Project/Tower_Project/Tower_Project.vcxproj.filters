@@ -43,6 +43,12 @@
     <Filter Include="ソース ファイル\シーン\タイトル">
       <UniqueIdentifier>{5aa30eea-750d-4b94-876d-6ea3e50331ee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\シーン\ゲームメイン">
+      <UniqueIdentifier>{58ed8647-7854-4f1e-a7ec-24a73e6599ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\シーン\ゲームメイン">
+      <UniqueIdentifier>{33ea9924-bbd6-4fe8-9f35-a7d88612effa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\AppFunctionDefine.cpp">
@@ -51,10 +57,16 @@
     <ClCompile Include="source\Scene_Title.cpp">
       <Filter>ソース ファイル\シーン\タイトル</Filter>
     </ClCompile>
+    <ClCompile Include="source\Scene_World.cpp">
+      <Filter>ソース ファイル\シーン\ゲームメイン</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Scene_Title.h">
       <Filter>ヘッダー ファイル\シーン\タイトル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Scene_World.h">
+      <Filter>ヘッダー ファイル\シーン\ゲームメイン</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
