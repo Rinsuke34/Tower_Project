@@ -31,7 +31,15 @@ void Scene_World::Process()
 // 描画
 void Scene_World::Draw()
 {
-	/* ワールド画面描写 */
-	DrawString(SCREEN_SIZE_WIDE / 2, SCREEN_SIZE_HEIGHT / 2, "ワールド", GetColor(255, 255, 255));
+	SetUseLighting(FALSE);
+
+	/* カメラ設定 */
+	SetCameraPositionAndTargetAndUpVec( VGet(0.0f, 500.0f, -500.0f), VGet(0.0f, 0.0f, 0.0f), VGet(0.f, 1.f, 0.0f));
+
+	/* オブジェクト描写 */
+	DrawLine3D(VGet(100.0f, 0.0f, 0.0f), VGet(-100.0f, 0.0f, 0.0f), GetColor(255, 0, 0));
+	DrawLine3D(VGet(0.0f, 0.0f, 100.0f), VGet(0.0f, 0.0f, -100.0f), GetColor(0, 0, 255));
+
+	DrawTriangle3D(VGet(0.0f, 0.0f, 0.0f), VGet(0.0f, 0.0f, 100.0f), VGet(100.0f, 0.0f, 0.0f), GetColor(255, 255, 255), TRUE);
 }
 
