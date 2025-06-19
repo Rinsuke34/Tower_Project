@@ -20,12 +20,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\AppFunctionDefine.cpp" />
+    <ClCompile Include="source\MapLoad.cpp" />
     <ClCompile Include="source\Scene_Title.cpp" />
     <ClCompile Include="source\Scene_World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Scene_Title.h" />
     <ClInclude Include="source\Scene_World.h" />
+    <ClInclude Include="source\StructDefine.h" />
+    <ClInclude Include="source\ConstantDefine.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

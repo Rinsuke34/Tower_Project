@@ -49,6 +49,9 @@
     <Filter Include="ヘッダー ファイル\シーン\ゲームメイン">
       <UniqueIdentifier>{33ea9924-bbd6-4fe8-9f35-a7d88612effa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\シーン\ゲームメイン\マップデータ">
+      <UniqueIdentifier>{ad1f9de1-b776-400c-9008-3a1e33e6e289}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\AppFunctionDefine.cpp">
@@ -60,6 +63,9 @@
     <ClCompile Include="source\Scene_World.cpp">
       <Filter>ソース ファイル\シーン\ゲームメイン</Filter>
     </ClCompile>
+    <ClCompile Include="source\MapLoad.cpp">
+      <Filter>ソース ファイル\シーン\ゲームメイン\マップデータ</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Scene_Title.h">
@@ -67,6 +73,12 @@
     </ClInclude>
     <ClInclude Include="source\Scene_World.h">
       <Filter>ヘッダー ファイル\シーン\ゲームメイン</Filter>
+    </ClInclude>
+    <ClInclude Include="source\StructDefine.h">
+      <Filter>ヘッダー ファイル\定義</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ConstantDefine.h">
+      <Filter>ヘッダー ファイル\定義</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
