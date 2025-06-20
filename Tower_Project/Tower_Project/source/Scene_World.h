@@ -26,6 +26,10 @@ class Scene_World : public SceneBase
 		void	MapLoad();		// マップ読み込み
 
 		/* 変数 */
-		std::vector<MAP_DATA>	vMapData_Chunks;	// チャンクのデータ
+		std::vector<MAP_DATA>	vMapData_Chunks;		// チャンクのデータ
+		int						aiTestGrHandle[5];		// テスト用画像ハンドル
 		int						iGrHandle;
+
+		VECTOR					vecCameraMove;			// カメラ移動量
+		VECTOR					vecCameraTargetMove;	// カメラ注視点移動量
 };
