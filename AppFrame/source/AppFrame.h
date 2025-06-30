@@ -24,5 +24,3 @@
 #include "DataListBase.h"
 #include "DataListServer.h"
 
-/* オブジェクト系 */
-#include "ObjectBase.h"

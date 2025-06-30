@@ -52,6 +52,12 @@
     <Filter Include="ソース ファイル\シーン\ゲームメイン\マップデータ">
       <UniqueIdentifier>{ad1f9de1-b776-400c-9008-3a1e33e6e289}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\データリスト\テクスチャ管理">
+      <UniqueIdentifier>{d74bd2ea-0a80-4a22-b52c-0468c8b54a7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\データリスト\テクスチャ管理">
+      <UniqueIdentifier>{ad6f889e-3eaf-4706-b04d-b24dc1411b0b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\AppFunctionDefine.cpp">
@@ -66,6 +72,15 @@
     <ClCompile Include="source\MapLoad.cpp">
       <Filter>ソース ファイル\シーン\ゲームメイン\マップデータ</Filter>
     </ClCompile>
+    <ClCompile Include="source\DataList_Texture.cpp">
+      <Filter>ソース ファイル\データリスト\テクスチャ管理</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VariableDefine.cpp">
+      <Filter>ソース ファイル\定義</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Object_Base.cpp">
+      <Filter>ソース ファイル\オブジェクト</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Scene_Title.h">
@@ -79,6 +94,15 @@
     </ClInclude>
     <ClInclude Include="source\ConstantDefine.h">
       <Filter>ヘッダー ファイル\定義</Filter>
+    </ClInclude>
+    <ClInclude Include="source\DataList_Texture.h">
+      <Filter>ヘッダー ファイル\データリスト\テクスチャ管理</Filter>
+    </ClInclude>
+    <ClInclude Include="source\VariableDefine.h">
+      <Filter>ヘッダー ファイル\定義</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Object_Base.h">
+      <Filter>ヘッダー ファイル\オブジェクト</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

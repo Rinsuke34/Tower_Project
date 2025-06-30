@@ -6,45 +6,31 @@
 void Scene_World::MapLoad()
 {
 	/* 読み込みたいマップデータのパス指定 */
-	std::string stPath = "resource/MapData/Map.json";
+	std::string stPath = "resource/MapData/MapData.json";
 	std::ifstream File(stPath);
 
 	/* jsonファイル読み込み */
 	nlohmann::json json;
 	File >> json;
 
-	/* チャンクデータ読み込み */
-	for (auto& chunk : json["Chunks"])
-	{
-        /* チャンクの中心座標取得 */
-        int chunkX = chunk["ChunkPosition"]["X"];
-        int chunkZ = chunk["ChunkPosition"]["Z"];
-
-        /* チャンクの対象IDを取得 */
-        // "ID"は3次元配列 [Z][Y][X]
-        const auto& idArray = chunk["ID"];
-        int zSize = idArray.size();
-        for (int z = 0; z < zSize; ++z)
+	/* マップデータ読み込み */
+    for (int iX = 0; iX < MAP_SIZE_X; iX++)
+    {
+        for (int iY = 0; iY < MAP_SIZE_Y; iY++)
         {
-            const auto& yArray = idArray[z];
-            int ySize = yArray.size();
-            for (int y = 0; y < ySize; ++y)
+            for (int iZ = 0; iZ < MAP_SIZE_Z; iZ++)
             {
-                const auto& xArray = yArray[y];
-                int xSize = xArray.size();
-                for (int x = 0; x < xSize; ++x)
+				/* 3次元配列の値を設定 */
+                try
                 {
-                    int id = xArray[x];
-                    MAP_DATA mapData;
-                    // X軸とZ軸を正しく反映
-                    mapData.stPosition.iX = chunkX + (x - (CHUNK_SIZE / 2)) * TILE_SIZE;
-                    mapData.stPosition.iY = y * TILE_SIZE;
-                    mapData.stPosition.iZ = chunkZ + (z - (CHUNK_SIZE / 2)) * TILE_SIZE;
-
-                    mapData.iId = id;
-                    vMapData_Chunks.push_back(mapData);
+                    this->aiMapData[iX][iY][iZ] = json["MapData"].at(iY).at(iX).at(iZ);
+                }
+                catch (const std::exception& e)
+                {
+                    // 範囲外アクセス時の処理
+                    this->aiMapData[iX][iY][iZ] = 0;
                 }
             }
         }
-	}
+    }
 }

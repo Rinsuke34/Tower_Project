@@ -58,12 +58,6 @@
     <Filter Include="ヘッダー ファイル\データ\サーバー">
       <UniqueIdentifier>{48886f2f-95fc-4fdf-99e9-9d375168db53}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\オブジェクト">
-      <UniqueIdentifier>{298325b0-0b49-4596-8db4-2c07452dad46}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\オブジェクト">
-      <UniqueIdentifier>{4592e3ac-6ab2-4ea7-a63e-386f49035645}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\汎用計算">
       <UniqueIdentifier>{7ba01d80-664d-4c8d-bbfb-d7203d1adfcd}</UniqueIdentifier>
     </Filter>
@@ -105,9 +99,6 @@
     <ClCompile Include="source\PublicProcess.cpp">
       <Filter>ソース ファイル\汎用計算</Filter>
     </ClCompile>
-    <ClCompile Include="source\ObjectBase.cpp">
-      <Filter>ソース ファイル\オブジェクト</Filter>
-    </ClCompile>
     <ClCompile Include="source\PublicFunction.cpp">
       <Filter>ソース ファイル\汎用計算</Filter>
     </ClCompile>
@@ -148,9 +139,6 @@
     </ClInclude>
     <ClInclude Include="source\DataListServer.h">
       <Filter>ヘッダー ファイル\データ\サーバー</Filter>
-    </ClInclude>
-    <ClInclude Include="source\ObjectBase.h">
-      <Filter>ヘッダー ファイル\オブジェクト</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

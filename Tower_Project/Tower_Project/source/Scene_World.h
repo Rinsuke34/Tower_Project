@@ -4,6 +4,7 @@
 
 #include "StructDefine.h"
 #include "ConstantDefine.h"
+#include "VariableDefine.h"
 
 #include <nlohmann/json.hpp>
 #include <fstream>
@@ -26,9 +27,7 @@ class Scene_World : public SceneBase
 		void	MapLoad();		// マップ読み込み
 
 		/* 変数 */
-		std::vector<MAP_DATA>	vMapData_Chunks;		// チャンクのデータ
-		int						aiTestGrHandle[5];		// テスト用画像ハンドル
-		int						iGrHandle;
+		int aiMapData[MAP_SIZE_X][MAP_SIZE_Y][MAP_SIZE_Z];	// マップデータ(足場)(3次元配列)
 
 		VECTOR					vecCameraMove;			// カメラ移動量
 		VECTOR					vecCameraTargetMove;	// カメラ注視点移動量

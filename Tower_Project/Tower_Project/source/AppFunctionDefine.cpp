@@ -1,9 +1,13 @@
 /* 2024.12.08 駒沢風助 ファイル作成 */
 
 #include "AppFrame.h"
+#include "VariableDefine.h"
 
 /* シーン */
 #include "Scene_Title.h"
+
+/* データリスト */
+#include "DataList_Texture.h"
 
 // シーンの設定
 namespace SCENE_SET
@@ -30,12 +34,14 @@ namespace PROJECT_INIT
 	{
 		/* データリスト作成 */
 		{
-
+			/* テクスチャデータリストを追加 */
+			gpDataListServer->AddDataList(new DataList_Texture());
 		}
 
 		/* データリスト取得 */
 		{
-
+			/* テクスチャデータリストを取得 */
+			gpDataList_Texture = static_cast<DataList_Texture*>(gpDataListServer->GetDataList("DataList_Texture"));
 		}
 	}
 }

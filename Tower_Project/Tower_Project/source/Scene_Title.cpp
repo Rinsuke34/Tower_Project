@@ -29,7 +29,7 @@ void Scene_Title::Initialization()
 void Scene_Title::Process()
 {
 	/* 入力待ち */
-	if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_Z] == true)
+	if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_Z] == TRUE)
 	{
 		/* シーン"ワールド"をセット */
 		gpSceneServer->AddSceneReservation(new Scene_World());
