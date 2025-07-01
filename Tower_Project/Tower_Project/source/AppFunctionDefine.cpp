@@ -32,16 +32,11 @@ namespace PROJECT_INIT
 	// プロジェクト初期化処理
 	void	Init()
 	{
-		/* データリスト作成 */
+		/* データリスト作成＆取得 */
 		{
 			/* テクスチャデータリストを追加 */
-			gpDataListServer->AddDataList(new DataList_Texture());
-		}
-
-		/* データリスト取得 */
-		{
-			/* テクスチャデータリストを取得 */
-			gpDataList_Texture = static_cast<DataList_Texture*>(gpDataListServer->GetDataList("DataList_Texture"));
+			gpDataList_Texture = new DataList_Texture();
+			gpDataListServer->AddDataList(gpDataList_Texture);
 		}
 	}
 }

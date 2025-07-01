@@ -13,83 +13,117 @@ Scene_World::Scene_World() : SceneBase("Scene_World", 0, false)
 // デストラクタ
 Scene_World::~Scene_World()
 {
-
+	// オブジェクトデータリスト削除
+	gpDataListServer->DeleteDataList("DataList_Object");
 }
 
 // 初期化
 void Scene_World::Initialization()
 {
+	/* オブジェクトデータリストの生成＆登録 */
+	this->pDataList_Object = new DataList_Object();
+	gpDataListServer->AddDataList(this->pDataList_Object);
+
+	/* 変数初期化 */
+	this->vecCameraPos			= VGet(0, 0, 0);	// カメラ移動量
+	this->vecCameraTargetPos	= VGet(0, 0, 0);	// カメラ注視点移動量
+	this->fCameraAngleX			= 0.0f;				// カメラX軸回転量
+	this->fCameraAngleY			= 0.0f;				// カメラY軸回転量
+	this->stSelectionPosition	= { 0, 0, 0 };		// 選択中の座標
+
 	/* マップ読み込み */
     MapLoad();
 
     /* カメラ位置初期化 */
-    this->vecCameraMove         = VGet(0, 0, 0);    // カメラ移動量
-    this->vecCameraTargetMove   = VGet(0, 0, 0);	// カメラ注視点移動量
+    this->vecCameraPos         = VGet(0, 0, 0);		// カメラ移動量
+    this->vecCameraTargetPos   = VGet(0, 0, 0);		// カメラ注視点移動量
 }
 
 // 計算
 void Scene_World::Process()
 {
-    /* 前後左右の入力でカメラ移動量を変更 */
-    // 前
-    if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_W])
-    {
-        this->vecCameraMove.z -= 10;
-    }
-    // 後
-    if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_S])
-    {
-        this->vecCameraMove.z += 10;
-    }
-    // 左
-    if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_A])
-    {
-        this->vecCameraMove.x += 10;
-    }
-    // 右
-    if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_D])
-    {
-        this->vecCameraMove.x -= 10;
-    }
+	/* 前後左右の入力で位置を変更 */
+	const float	fSpeed	= 10.0f;			// 移動速度
+	VECTOR		vecMove	= VGet(0, 0, 0);	// 移動量
 
-    /* 十字キーの入力でカメラ注視点移動量を変更 */
-	// 上
-    if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_UP])
-    {
-        this->vecCameraTargetMove.z -= 10;
-    }
-    // 下
-    if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_DOWN])
-    {
-        this->vecCameraTargetMove.z += 10;
-    }
-    // 左
-    if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_LEFT])
-    {
-        this->vecCameraTargetMove.x += 10;
-    }
-    // 右
-    if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_RIGHT])
-    {
-        this->vecCameraTargetMove.x -= 10;
-    }
+	float angle = this->fCameraAngleX;
+
+	// 前進
+	if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_W])
+	{
+		vecMove.x += -sinf(angle) * fSpeed;
+		vecMove.z += +cosf(angle) * fSpeed;
+	}
+	// 後退
+	if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_S])
+	{
+		vecMove.x -= -sinf(angle) * fSpeed;
+		vecMove.z -= +cosf(angle) * fSpeed;
+	}
+	// 左移動
+	if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_A])
+	{
+		vecMove.x += -cosf(angle) * fSpeed;
+		vecMove.z += -sinf(angle) * fSpeed;
+	}
+	// 右移動
+	if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_D])
+	{
+		vecMove.x += +cosf(angle) * fSpeed;
+		vecMove.z += +sinf(angle) * fSpeed;
+	}
+	// 上昇
+	if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_SPACE])
+	{
+		this->vecCameraPos.y += fSpeed;
+	}
+	// 下降
+	if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_LSHIFT])
+	{
+		this->vecCameraPos.y -= fSpeed;
+	}
+
+	/* 移動量分カメラ位置を移動 */
+	this->vecCameraPos.x += vecMove.x;
+	this->vecCameraPos.z += vecMove.z;
+
+	/* カメラ注視点の算出 */
+	// マウス移動量
+	this->fCameraAngleX -= gstKeyboardInputData.iMouseMoveX * 0.01f;	// X軸回転量
+	this->fCameraAngleY -= gstKeyboardInputData.iMouseMoveY * 0.01f;	// Y軸回転量
+
+	// Y軸回転制限
+	float fLimit = DX_PI_F / 2 - 0.01f;	// 約90度
+	if (this->fCameraAngleY > fLimit)	{	this->fCameraAngleY = fLimit;	}
+	if (this->fCameraAngleY < -fLimit)	{	this->fCameraAngleY = -fLimit;	}
+
+	// カメラ注視点の設定
+	const float fScale = 200.f;	// カメラ注視点の距離
+	this->vecCameraTargetPos.x = fScale * cosf(this->fCameraAngleY) * -sinf(this->fCameraAngleX) + this->vecCameraPos.x;
+	this->vecCameraTargetPos.y = fScale * sinf(this->fCameraAngleY) + this->vecCameraPos.y;
+	this->vecCameraTargetPos.z = fScale * cosf(this->fCameraAngleY) * cosf(this->fCameraAngleX) + this->vecCameraPos.z;
+
+	/* 選択中の座標を取得 */
+	// カメラ注視点がどのブロックに当たっているかを計算
+	this->stSelectionPosition.iX = static_cast<int>((this->vecCameraTargetPos.x + this->vecCameraPos.x) / TILE_SIZE_PIXEL_X);
+	this->stSelectionPosition.iY = static_cast<int>((this->vecCameraTargetPos.y + this->vecCameraPos.y) / TILE_SIZE_PIXEL_Y);
+	this->stSelectionPosition.iZ = static_cast<int>((this->vecCameraTargetPos.z + this->vecCameraPos.z) / TILE_SIZE_PIXEL_Z);
+
+	/* オブジェクトの更新処理 */
+	this->pDataList_Object->Object_Update();
 }
 
 // 描画
 void Scene_World::Draw()
 {
+	/* ライティング無効 */
+	SetUseLighting(FALSE);
+
     /* カメラ設定 */
-    SetCameraPositionAndTargetAndUpVec(VAdd(VGet(0.0f, 1000.0f, 500.f), this->vecCameraMove), VAdd(this->vecCameraTargetMove, VGet(0.0f, 0.0f, 0.f)), VGet(0.0f, 1.0f, 0.f));
+    SetCameraPositionAndTargetAndUpVec(this->vecCameraPos, this->vecCameraTargetPos, VGet(0.0f, 1.0f, 0.f));
 
-    /* 中心に線を交差させる */
-	DrawLine3D(VGet(0.0f, 0.0f, -1000.0f), VGet(0.0f, 0.0f, 1000.0f), GetColor(255, 0, 0));
-	DrawLine3D(VGet(-1000.0f, 0.0f, 0.0f), VGet(1000.0f, 0.0f, 0.0f), GetColor(0, 255, 0));
-	DrawLine3D(VGet(0.0f, -1000.0f, 0.0f), VGet(0.0f, 1000.0f, 0.0f), GetColor(0, 0, 255));
-
-    /* カメラの注視点にも線を交差させる */
-	//DrawLine3D(VAdd(VGet(0.0f, 0.0f, -100.0f), this->vecCameraTargetMove), VAdd(VGet(0.0f, 0.0f, 100.0f), this->vecCameraTargetMove), GetColor(255, 0, 0));
-	//DrawLine3D(VAdd(VGet(-100.0f, 0.0f, 0.0f), this->vecCameraTargetMove), VAdd(VGet(100.0f, 0.0f, 0.0f), this->vecCameraTargetMove), GetColor(0, 255, 0));
-	//DrawLine3D(VAdd(VGet(0.0f, -100.0f, 0.0f), this->vecCameraTargetMove), VAdd(VGet(0.0f, 100.0f, 0.0f), this->vecCameraTargetMove), GetColor(0, 0, 255));
+	// 裏面描写有効
+	SetUseBackCulling(TRUE);
 
     /* 足場の描写 */
 	for (int iX = 0; iX < MAP_SIZE_X; iX++)
@@ -99,10 +133,10 @@ void Scene_World::Draw()
 			for (int iZ = 0; iZ < MAP_SIZE_Z; iZ++)
 			{
 				/* IDを取得 */
-				int iId = this->aiMapData[iX][iY][iZ];
+				int iId = pDataList_Object->aiMapData[iX][iY][iZ];
 
-				/* IDが0以外(何かしらのブロックが存在している)状態であるか */
-				if (iId != 0)
+				/* IDが1あるか */
+				if (iId == 1)
 				{
 					/* 中心座標を取得(int型で保存されているのでfloat型で取得) */
 					float fX = static_cast<float>(iX * TILE_SIZE_PIXEL_X);
@@ -122,83 +156,184 @@ void Scene_World::Draw()
 
 					for (int i = 0; i < 8; ++i)
 					{
-						aVertex[i].norm = VGet(0.0f, 1.0f, 0.0f);           // 法線ベクトル
-						aVertex[i].dif  = GetColorU8(255, 255, 255, 255);   // 拡散光の色
-						aVertex[i].spc  = GetColorU8(0, 0, 0, 0);           // 鏡面光の色
-						aVertex[i].u    = (i % 2 == 1) ? 1.0f : 0.0f;       // テクスチャ座標U
-						aVertex[i].v    = (i >= 2) ? 1.0f : 0.0f;           // テクスチャ座標V
-						aVertex[i].su   = 0.0f;                             // スペキュラのU座標
-						aVertex[i].sv   = 0.0f;                             // スペキュラのV座標
+						aVertex[i].dif  = GetColorU8(255, 255, 255, 255);	// 拡散光の色
+						aVertex[i].spc  = GetColorU8(0, 0, 0, 0);			// 鏡面光の色
+						aVertex[i].su   = 0.0f;								// スペキュラのU座標
+						aVertex[i].sv   = 0.0f;								// スペキュラのV座標
 					}
 
                     /* Y+方向の最大位置、あるいはY+方向座標にブロックが存在している状態であるか */
-                    if (iY == MAP_SIZE_Y - 1 || this->aiMapData[iX][iY + 1][iZ] == 0)
+                    if (iY == MAP_SIZE_Y - 1 || pDataList_Object->aiMapData[iX][iY + 1][iZ] == 0)
                     {
                         /* 上面を描写 */
 						// インデックスデータ（上面の2ポリゴン）
 						unsigned short IndexTop[6] = { 0, 1, 4, 4, 1, 5 };
 
+						// 法線ベクトルを設定
+						for (int i = 0; i < 8; ++i)
+						{
+							aVertex[i].norm = VGet(0.0f, 1.0f, 0.0f); //
+						}
+
+						// uv座標を設定
+						aVertex[0].u = 1.f;
+						aVertex[0].v = 0.f;
+						aVertex[1].u = 1.f;
+						aVertex[1].v = 1.f;
+						aVertex[4].u = 0.f;
+						aVertex[4].v = 0.f;
+						aVertex[5].u = 0.f;
+						aVertex[5].v = 1.f;
+
 						// 四角形（板ポリゴン）の描画
-						DrawPolygonIndexed3D(aVertex, 8, IndexTop, 2, gpDataList_Texture->aiGrHandle_SampleBlock[DIRECTION_TOP], FALSE);
+						DrawPolygonIndexed3D(aVertex, 8, IndexTop, 2, gpDataList_Texture->aiGrHandle_SampleBlock[DIRECTION_TOP], TRUE);
                     }
 
-                    /* Y-方向の最大位置、あるいはY-方向座標にブロックが存在していないじょうたいであるか */
-                    if (iY == 0 || this->aiMapData[iX][iY - 1][iZ] == 0)
+                    /* Y-方向の最大位置、あるいはY-方向座標にブロックが存在していない状態であるか */
+                    if (iY == 0 || pDataList_Object->aiMapData[iX][iY - 1][iZ] == 0)
                     {
                         /* 底面を描写 */
                         // インデックスデータ（底面の2ポリゴン）
-                        unsigned short IndexBottom[6] = { 3, 2, 7, 7, 2, 6 };
+                        unsigned short IndexBottom[6] = { 6, 3, 2, 7, 3, 6 };
+
+						// 法線ベクトルを設定
+						for (int i = 0; i < 8; ++i)
+						{
+							aVertex[i].norm = VGet(0.0f, -1.0f, 0.0f);
+						}
+
+						// uv座標を設定
+						aVertex[2].u = 1.f;
+						aVertex[2].v = 0.f;
+						aVertex[3].u = 1.f;
+						aVertex[3].v = 1.f;
+						aVertex[6].u = 0.f;
+						aVertex[6].v = 0.f;
+						aVertex[7].u = 0.f;
+						aVertex[7].v = 1.f;
 
                         // 四角形（板ポリゴン）の描画
-                        DrawPolygonIndexed3D(aVertex, 8, IndexBottom, 2, gpDataList_Texture->aiGrHandle_SampleBlock[DIRECTION_BOTTOM], FALSE);
+                        DrawPolygonIndexed3D(aVertex, 8, IndexBottom, 2, gpDataList_Texture->aiGrHandle_SampleBlock[DIRECTION_BOTTOM], TRUE);
                     }
 
 					/* X+方向の最大位置、あるいはX+方向座標にブロックが存在している状態であるか */
-					if (iX == MAP_SIZE_X - 1 || this->aiMapData[iX + 1][iY][iZ] == 0)
+					if (iX == MAP_SIZE_X - 1 || pDataList_Object->aiMapData[iX + 1][iY][iZ] == 0)
 					{
 						/* 右面を描写 */
 						// インデックスデータ（右面の2ポリゴン）
 						unsigned short IndexRight[6] = { 3, 1, 2, 2, 1, 0 };
 
+						// 法線ベクトルを設定
+						for (int i = 0; i < 8; ++i)
+						{
+							aVertex[i].norm = VGet(+1.0f, 0.0f, 0.0f);
+						}
+
+						// uv座標を設定
+						aVertex[0].u = 0.f;
+						aVertex[0].v = 0.f;
+						aVertex[1].u = 1.f;
+						aVertex[1].v = 0.f;
+						aVertex[2].u = 0.f;
+						aVertex[2].v = 1.f;
+						aVertex[3].u = 1.f;
+						aVertex[3].v = 1.f;
+
 						// 四角形（板ポリゴン）の描画
-						DrawPolygonIndexed3D(aVertex, 8, IndexRight, 2, gpDataList_Texture->aiGrHandle_SampleBlock[DIRECTION_SIDE], FALSE);
+						DrawPolygonIndexed3D(aVertex, 8, IndexRight, 2, gpDataList_Texture->aiGrHandle_SampleBlock[DIRECTION_SIDE], TRUE);
 					}
 
-					/* X-方向の最大位置、あるいはX-方向座標にブロックが存在していないじょうたいであるか */
-					if (iX == 0 || this->aiMapData[iX - 1][iY][iZ] == 0)
+					/* X-方向の最大位置、あるいはX-方向座標にブロックが存在していない状態であるか */
+					if (iX == 0 || pDataList_Object->aiMapData[iX - 1][iY][iZ] == 0)
 					{
 						/* 左面を描写 */
 						// インデックスデータ（左面の2ポリゴン）
 						unsigned short IndexLeft[6] = { 6, 4, 7, 7, 4, 5 };
 
+						// 法線ベクトルを設定
+						for (int i = 0; i < 8; ++i)
+						{
+							aVertex[i].norm = VGet(-1.0f, 0.0f, 0.0f);
+						}
+
+						// uv座標を設定
+						aVertex[4].u = 0.f;
+						aVertex[4].v = 0.f;
+						aVertex[5].u = 1.f;
+						aVertex[5].v = 0.f;
+						aVertex[6].u = 0.f;
+						aVertex[6].v = 1.f;
+						aVertex[7].u = 1.f;
+						aVertex[7].v = 1.f;
+
 						// 四角形（板ポリゴン）の描画
-						DrawPolygonIndexed3D(aVertex, 8, IndexLeft, 2, gpDataList_Texture->aiGrHandle_SampleBlock[DIRECTION_SIDE], FALSE);
+						DrawPolygonIndexed3D(aVertex, 8, IndexLeft, 2, gpDataList_Texture->aiGrHandle_SampleBlock[DIRECTION_SIDE], TRUE);
 					}
 
 					/* Z+方向の最大位置、あるいはZ+方向座標にブロックが存在している状態であるか */
-					if (iZ == MAP_SIZE_Z - 1 || this->aiMapData[iX][iY][iZ + 1] == 0)
+					if (iZ == MAP_SIZE_Z - 1 || pDataList_Object->aiMapData[iX][iY][iZ + 1] == 0)
 					{
 						/* 手前面を描写 */
 						// インデックスデータ（手前面の2ポリゴン）
 						unsigned short IndexFront[6] = { 2, 0, 6, 6, 0, 4 };
 
+						// 法線ベクトルを設定
+						for (int i = 0; i < 8; ++i)
+						{
+							aVertex[i].norm = VGet(0.0f, 0.0f, +1.0f);
+						}
+
+						// uv座標を設定
+						aVertex[0].u = 1.f;
+						aVertex[0].v = 0.f;
+						aVertex[2].u = 1.f;
+						aVertex[2].v = 1.f;
+						aVertex[4].u = 0.f;
+						aVertex[4].v = 0.f;
+						aVertex[6].u = 0.f;
+						aVertex[6].v = 1.f;
+
 						// 四角形（板ポリゴン）の描画
-						DrawPolygonIndexed3D(aVertex, 8, IndexFront, 2, gpDataList_Texture->aiGrHandle_SampleBlock[DIRECTION_SIDE], FALSE);
+						DrawPolygonIndexed3D(aVertex, 8, IndexFront, 2, gpDataList_Texture->aiGrHandle_SampleBlock[DIRECTION_SIDE], TRUE);
 					}
 
-					/* Z-方向の最大位置、あるいはZ-方向座標にブロックが存在していないじょうたいであるか */
-					if (iZ == 0 || this->aiMapData[iX][iY][iZ - 1] == 0)
+					/* Z-方向の最大位置、あるいはZ-方向座標にブロックが存在していない状態であるか */
+					if (iZ == 0 || pDataList_Object->aiMapData[iX][iY][iZ - 1] == 0)
 					{
 						/* 奥面を描写 */
 						// インデックスデータ（奥面の2ポリゴン）
 						unsigned short IndexBack[6] = { 7, 5, 3, 3, 5, 1 };
 
+						// 法線ベクトルを設定
+						for (int i = 0; i < 8; ++i)
+						{
+							aVertex[i].norm = VGet(0.0f, 0.0f, -1.0f);
+						}
+
+						// uv座標を設定
+						aVertex[1].u = 1.f;
+						aVertex[1].v = 0.f;
+						aVertex[3].u = 1.f;
+						aVertex[3].v = 1.f;
+						aVertex[5].u = 0.f;
+						aVertex[5].v = 0.f;
+						aVertex[7].u = 0.f;
+						aVertex[7].v = 1.f;
+
 						// 四角形（板ポリゴン）の描画
-						DrawPolygonIndexed3D(aVertex, 8, IndexBack, 2, gpDataList_Texture->aiGrHandle_SampleBlock[DIRECTION_SIDE], FALSE);
+						DrawPolygonIndexed3D(aVertex, 8, IndexBack, 2, gpDataList_Texture->aiGrHandle_SampleBlock[DIRECTION_SIDE], TRUE);
 					}
 				}
 			}
 		}
 	}
+
+	// カメラ注視点に交差線を描写
+	DrawLine3D(VAdd(this->vecCameraTargetPos, VGet(+10.f, 0.f, 0.f)), VAdd(this->vecCameraTargetPos, VGet(-10.f, 0.f, 0.f)), GetColor(255, 0, 0));
+	DrawLine3D(VAdd(this->vecCameraTargetPos, VGet(0.f, +10.f, 0.f)), VAdd(this->vecCameraTargetPos, VGet(0.f, -10.f, 0.f)), GetColor(0, 255, 0));
+	DrawLine3D(VAdd(this->vecCameraTargetPos, VGet(0.f, 0.f, +10.f)), VAdd(this->vecCameraTargetPos, VGet(0.f, 0.f, -10.f)), GetColor(0, 0, 255));
+
+	// オブジェクトの描写処理
+	this->pDataList_Object->Object_Draw();
 }
 

@@ -9,6 +9,9 @@
 #include <nlohmann/json.hpp>
 #include <fstream>
 
+/* データリスト */
+#include "DataList_Object.h"
+
 /* シーン"ワールド"の宣言 */
 
 // シーン"ワールド"
@@ -26,9 +29,12 @@ class Scene_World : public SceneBase
 		/* 関数 */
 		void	MapLoad();		// マップ読み込み
 
-		/* 変数 */
-		int aiMapData[MAP_SIZE_X][MAP_SIZE_Y][MAP_SIZE_Z];	// マップデータ(足場)(3次元配列)
+		DataList_Object*	pDataList_Object;	// オブジェクトデータリスト
 
-		VECTOR					vecCameraMove;			// カメラ移動量
-		VECTOR					vecCameraTargetMove;	// カメラ注視点移動量
+		VECTOR	vecCameraPos;					// カメラ移動量
+		VECTOR	vecCameraTargetPos;				// カメラ注視点移動量
+		float	fCameraAngleX;					// カメラX軸回転量
+		float	fCameraAngleY;					// カメラY軸回転量
+
+		POSITION_3D_MAP	stSelectionPosition;	// 選択中の座標
 };

@@ -20,6 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\AppFunctionDefine.cpp" />
+    <ClCompile Include="source\Building_Base.cpp" />
+    <ClCompile Include="source\Building_MainBase.cpp" />
+    <ClCompile Include="source\Character_Base.cpp" />
+    <ClCompile Include="source\Character_Enemy_Normal_Walk.cpp" />
+    <ClCompile Include="source\DataList_Object.cpp" />
     <ClCompile Include="source\DataList_Texture.cpp" />
     <ClCompile Include="source\MapLoad.cpp" />
     <ClCompile Include="source\Object_Base.cpp" />
@@ -28,6 +33,11 @@
     <ClCompile Include="source\VariableDefine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Building_Base.h" />
+    <ClInclude Include="source\Building_MainBase.h" />
+    <ClInclude Include="source\Character_Base.h" />
+    <ClInclude Include="source\Character_Enemy_Normal_Walk.h" />
+    <ClInclude Include="source\DataList_Object.h" />
     <ClInclude Include="source\DataList_Texture.h" />
     <ClInclude Include="source\Object_Base.h" />
     <ClInclude Include="source\Scene_Title.h" />

@@ -2,6 +2,8 @@
 
 #include "Scene_World.h"
 
+#include "Building_MainBase.h"
+
 /* シーン"ゲームメイン"のマップロード部分の定義 */
 void Scene_World::MapLoad()
 {
@@ -23,14 +25,17 @@ void Scene_World::MapLoad()
 				/* 3次元配列の値を設定 */
                 try
                 {
-                    this->aiMapData[iX][iY][iZ] = json["MapData"].at(iY).at(iX).at(iZ);
+                    pDataList_Object->aiMapData[iX][iY][iZ] = json["MapData"].at(iY).at(iX).at(iZ);
                 }
                 catch (const std::exception& e)
                 {
                     // 範囲外アクセス時の処理
-                    this->aiMapData[iX][iY][iZ] = 0;
+                    pDataList_Object->aiMapData[iX][iY][iZ] = 0;
                 }
             }
         }
     }
+
+    // メイン拠点を追加(仮)
+	pDataList_Object->SetBuilding(new Building_MainBase());
 }
