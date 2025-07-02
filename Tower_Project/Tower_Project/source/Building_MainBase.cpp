@@ -18,8 +18,9 @@ Building_MainBase::Building_MainBase() : Building_Base()
 	this->vecPosition.y = this->stMapPosition.iY * TILE_SIZE_PIXEL_Y - (TILE_SIZE_PIXEL_Y / 2);	// Y座標を設定
 	this->vecPosition.z = this->stMapPosition.iZ * TILE_SIZE_PIXEL_Z;							// Z座標を設定
 
-	// データリスト上にこのオブジェクトの座標を設定
-	static_cast<DataList_Object*>(gpDataListServer->GetDataList("DataList_Object"))->aiMapData[this->stMapPosition.iX][this->stMapPosition.iY][this->stMapPosition.iZ] = 1000;
+	// データリスト上にこのオブジェクトの情報を設定
+	MAP_DATA stMapData	=	{ this->stMapPosition.iX, this->stMapPosition.iY, this->stMapPosition.iZ, 1000 };
+	static_cast<DataList_Object*>(gpDataListServer->GetDataList("DataList_Object"))->aMapBuildingData[1000] = stMapData;
 }
 
 // デストラクタ

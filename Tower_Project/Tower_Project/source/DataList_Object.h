@@ -3,6 +3,7 @@
 #pragma once
 #include "AppFrame.h"
 #include <vector>
+#include <map>
 #include "ConstantDefine.h"
 
 /* オブジェクト */
@@ -33,7 +34,8 @@ class DataList_Object : public DataListBase
 		std::vector<Building_Base*>		paBuildingList;			// 建造物リスト
 
 		/* マップ情報 */
-		int		aiMapData[MAP_SIZE_X][MAP_SIZE_Y][MAP_SIZE_Z];	// マップデータ(足場)(3次元配列)
+		int							aiMapData[MAP_SIZE_X][MAP_SIZE_Y][MAP_SIZE_Z];	// マップデータ(足場)(3次元配列)
+		std::map<int, MAP_DATA>		aMapBuildingData;								// マップデータ(建造物)(ID/情報)
 
 	protected:
 };

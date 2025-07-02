@@ -19,3 +19,14 @@ struct MAP_DATA
 	POSITION_3D_MAP stPosition;	// 座標
 	int				iId;		// ID
 };
+
+// 評価リスト(A*アルゴリズム用)
+struct ASTAR_EVALUATION_LIST
+{
+	int iId;		// ID
+	int iG;			// スタートからのコスト
+	int iH;			// ゴールまでの予想コスト
+	int iF;			// 総コスト
+	bool bOpen;		// オープンリストにあるかどうか
+	bool bClose;	// クローズリストにあるかどうか
+};
