@@ -3,6 +3,7 @@
 #include "Scene_World.h"
 
 #include "Building_MainBase.h"
+#include "Character_Enemy_Normal_Walk.h"
 
 /* シーン"ゲームメイン"のマップロード部分の定義 */
 void Scene_World::MapLoad()
@@ -38,4 +39,7 @@ void Scene_World::MapLoad()
 
     // メイン拠点を追加(仮)
 	pDataList_Object->SetBuilding(new Building_MainBase());
+
+	/* エネミーを追加(仮) */
+	pDataList_Object->SetCharacter(new Character_Enemy_Normal_Walk());
 }

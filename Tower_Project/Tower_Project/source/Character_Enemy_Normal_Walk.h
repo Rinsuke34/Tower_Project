@@ -3,6 +3,9 @@
 #pragma once
 #include "Character_Base.h"
 
+#include <vector>
+#include "StructDefine.h"
+
 /* エネミー(歩行/通常)クラスの宣言 */
 
 // エネミー(歩行/通常)クラス
@@ -18,4 +21,6 @@ class Character_Enemy_Normal_Walk : public Character_Base
 		virtual void	Reset()				override;	// リセット処理
 
 	protected:
+		// 移動ルート
+		std::vector<POSITION_3D_MAP> vPath;
 };

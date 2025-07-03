@@ -8,11 +8,186 @@
 #include "StructDefine.h"
 #include "ConstantDefine.h"
 
-/* エネミー(歩行/通常)クラスの定義 */
-// コンストラクタ
-Character_Enemy_Normal_Walk::Character_Enemy_Normal_Walk() : Character_Base()
-{
+Character_Enemy_Normal_Walk::Character_Enemy_Normal_Walk() : Character_Base()  
+{  
+   // 移動ルートをA*アルゴリズムで計算  
+   // 移動ルートをA*アルゴリズムで計算  
 
+// プレイヤーの初期ワールド座標を設定
+    this->vecPosition = VGet(64, 0, 64); // 初期位置（ワールド座標）
+
+    // スタート位置をマップ座標に変換
+    POSITION_3D_MAP stStart = {
+        static_cast<int>(this->vecPosition.x / TILE_SIZE_PIXEL_X),
+        static_cast<int>(this->vecPosition.y / TILE_SIZE_PIXEL_Y),
+        static_cast<int>(this->vecPosition.z / TILE_SIZE_PIXEL_Z)
+    };
+
+    // ゴール（拠点）の座標を取得
+    DataList_Object* pObj = static_cast<DataList_Object*>(gpDataListServer->GetDataList("DataList_Object"));
+    if (!pObj) return;
+    auto it = pObj->aMapBuildingData.find(1000);
+    if (it == pObj->aMapBuildingData.end()) return;
+    POSITION_3D_MAP stGoal = it->second.stPosition;
+
+    // マップの3D配列参照
+    auto& aiMapData = pObj->aiMapData;
+
+    // 評価値リストをヒープ確保（一次元配列で3Dに見立てる）
+    const int totalSize = MAP_SIZE_X * MAP_SIZE_Y * MAP_SIZE_Z;
+    std::unique_ptr<ASTAR_EVALUATION_LIST[]> stAStarEvaluationList(new ASTAR_EVALUATION_LIST[totalSize]);
+
+    // 3Dインデックスを1次元に変換するマクロ
+#define ASTAR_INDEX(x, y, z) ((x) + (y) * MAP_SIZE_X + (z) * MAP_SIZE_X * MAP_SIZE_Y)
+
+// 評価リスト初期化
+    for (int x = 0; x < MAP_SIZE_X; x++) {
+        for (int y = 0; y < MAP_SIZE_Y; y++) {
+            for (int z = 0; z < MAP_SIZE_Z; z++) {
+                auto& node = stAStarEvaluationList[ASTAR_INDEX(x, y, z)];
+                node.iG = 0;                         // 開始点からの移動コスト
+                node.iH = 0;                         // ゴールまでの推定コスト
+                node.iF = 0;                         // 総評価値 = G + H
+                node.bOpen = false;                  // オープンリストに入っているか
+                node.bClose = false;                 // クローズリストに入っているか
+                node.stParent = { -1, -1, -1 };      // 親ノード（経路復元用）
+            }
+        }
+    }
+
+    // 開始ノードの初期設定
+    auto& startNode = stAStarEvaluationList[ASTAR_INDEX(stStart.iX, stStart.iY, stStart.iZ)];
+    startNode.iG = 0;
+    startNode.iH = abs(stStart.iX - stGoal.iX) + abs(stStart.iY - stGoal.iY) + abs(stStart.iZ - stGoal.iZ); // マンハッタン距離
+    startNode.iF = startNode.iG + startNode.iH;
+    startNode.bOpen = true;
+
+    bool bGoalFound = false;
+    POSITION_3D_MAP stCurrent; // 現在探索中のノード
+
+    while (true)
+    {
+        // オープンリストから最小F値ノードを探索
+        int iMinF = INT_MAX;
+        bool bFound = false;
+
+        for (int x = 0; x < MAP_SIZE_X; x++) {
+            for (int y = 0; y < MAP_SIZE_Y; y++) {
+                for (int z = 0; z < MAP_SIZE_Z; z++) {
+                    auto& node = stAStarEvaluationList[ASTAR_INDEX(x, y, z)];
+                    if (node.bOpen && node.iF < iMinF) {
+                        iMinF = node.iF;
+                        stCurrent = { x, y, z };
+                        bFound = true;
+                    }
+                }
+            }
+        }
+
+        if (!bFound) {
+            // オープンリストが空→探索失敗
+            break;
+        }
+
+        // ゴールに到達したか確認（必要なら Y 方向の誤差許容も追加可能）
+        if (stCurrent.iX == stGoal.iX && stCurrent.iY == stGoal.iY && stCurrent.iZ == stGoal.iZ) {
+            bGoalFound = true;
+            break;
+        }
+
+        // 現在ノードをクローズリストへ移動
+        auto& currentNode = stAStarEvaluationList[ASTAR_INDEX(stCurrent.iX, stCurrent.iY, stCurrent.iZ)];
+        currentNode.bOpen = false;
+        currentNode.bClose = true;
+
+        // 隣接（X/Z方向）のノードを探索
+        for (int iX = -1; iX <= 1; iX++) {
+            for (int iZ = -1; iZ <= 1; iZ++) {
+                if ((iX == 0 && iZ == 0) || (iX != 0 && iZ != 0)) continue; // X/Zのみに移動可
+
+                int iSearchX = stCurrent.iX + iX;
+                int iSearchY = stCurrent.iY;
+                int iSearchZ = stCurrent.iZ;
+
+                // 範囲外ならスキップ
+                if (iSearchX < 0 || iSearchX >= MAP_SIZE_X || iSearchZ < 0 || iSearchZ >= MAP_SIZE_Z)
+                    continue;
+
+                int iNewY = iSearchY;
+                int iMoveCost = 1;
+
+                if (aiMapData[iSearchX][iSearchY][iSearchZ] != 0) {
+                    // 足場がある → 上にスペースがあるか確認
+                    if (iSearchY + 1 < MAP_SIZE_Y && aiMapData[iSearchX][iSearchY + 1][iSearchZ] == 0) {
+                        iNewY = iSearchY + 1; // 上に移動
+                        iMoveCost = 2;       // 移動コスト2倍
+                    }
+                    else {
+                        continue; // 上にも詰まっている → 移動不可
+                    }
+                }
+                else {
+                    // 足場がない → 下に足場があるか確認
+                    int y = iSearchY - 1;
+                    bool bFound = false;
+                    while (y >= 0) {
+                        if (aiMapData[iSearchX][y][iSearchZ] != 0) {
+                            iNewY = y + 1; // 足場の上に移動
+                            bFound = true;
+                            break;
+                        }
+                        y--;
+                    }
+                    if (!bFound) continue; // 足場が見つからない → 移動不可
+                }
+
+                // 新Yが範囲外ならスキップ
+                if (iNewY < 0 || iNewY >= MAP_SIZE_Y)
+                    continue;
+
+                auto& nextNode = stAStarEvaluationList[ASTAR_INDEX(iSearchX, iNewY, iSearchZ)];
+
+                if (nextNode.bClose)
+                    continue; // すでに探索済み
+
+                // G, H, Fの再計算
+                int iG = currentNode.iG + iMoveCost;
+                int iH = abs(iSearchX - stGoal.iX) + abs(iNewY - stGoal.iY) + abs(iSearchZ - stGoal.iZ);
+                int iF = iG + iH;
+
+                // より良い経路なら更新
+                if (nextNode.bOpen) {
+                    if (iF < nextNode.iF) {
+                        nextNode.iG = iG;
+                        nextNode.iH = iH;
+                        nextNode.iF = iF;
+                        nextNode.stParent = stCurrent;
+                    }
+                }
+                else {
+                    // 初めての訪問 → オープンリストに追加
+                    nextNode.iG = iG;
+                    nextNode.iH = iH;
+                    nextNode.iF = iF;
+                    nextNode.bOpen = true;
+                    nextNode.stParent = stCurrent;
+                }
+            }
+        }
+    }
+
+    // 探索成功なら経路を復元
+    if (bGoalFound) {
+        POSITION_3D_MAP stTrace = stGoal;
+        while (!(stTrace.iX == stStart.iX && stTrace.iY == stStart.iY && stTrace.iZ == stStart.iZ)) {
+            vPath.push_back(stTrace);
+            stTrace = stAStarEvaluationList[ASTAR_INDEX(stTrace.iX, stTrace.iY, stTrace.iZ)].stParent;
+        }
+        vPath.push_back(stStart); // 始点も追加
+        std::reverse(vPath.begin(), vPath.end()); // 順路を逆転
+    }
+
+#undef ASTAR_INDEX
 }
 
 // デストラクタ
@@ -30,78 +205,86 @@ void Character_Enemy_Normal_Walk::Initialization()
 // 更新
 void Character_Enemy_Normal_Walk::Update()
 {
-	// 現在の座標からマップ上の座標を取得
-	POSITION_3D_MAP stMapPosition = { 0, 0, 0 };
-	stMapPosition.iX = static_cast<int>(this->vecPosition.x / TILE_SIZE_PIXEL_X);	// X座標を設定
-	stMapPosition.iY = static_cast<int>(this->vecPosition.y / TILE_SIZE_PIXEL_Y);	// Y座標を設定
-	stMapPosition.iZ = static_cast<int>(this->vecPosition.z / TILE_SIZE_PIXEL_Z);	// Z座標を設定
-
-	// メイン拠点(破壊対象)の座標を取得
-	POSITION_3D_MAP stMainBasePosition = { 0, 0, 0 };
-	stMainBasePosition = static_cast<DataList_Object*>(gpDataListServer->GetDataList("DataList_Object"))->aMapBuildingData[1000].stPosition;
-
-	/* A*アルゴリズムを用いて、現在の座標からメイン拠点までの最短経路を取得 */
-	// A*アルゴリズムの評価値リストを作成
-	ASTAR_EVALUATION_LIST stAStarEvaluationList[MAP_SIZE_X][MAP_SIZE_Y][MAP_SIZE_Z];
-	// A*アルゴリズムの評価値リストを初期化
-	for (int i = 0; i < MAP_SIZE_X; i++) {
-		for (int j = 0; j < MAP_SIZE_Y; j++) {
-			for (int k = 0; k < MAP_SIZE_Z; k++) {
-				stAStarEvaluationList[i][j][k].iG		= 0;		// 開始点からの移動コスト
-				stAStarEvaluationList[i][j][k].iH		= 0;		// ゴールまでの推定コスト
-				stAStarEvaluationList[i][j][k].iF		= 0;		// 総コスト
-				stAStarEvaluationList[i][j][k].bOpen	= false;	// オープンリストに存在するか
-				stAStarEvaluationList[i][j][k].bClose	= false;	// クローズリストに存在するか
-			}
-		}
+	// 移動ルートが設定されていない場合は何もしない
+	if (vPath.empty()) {
+		return;
 	}
 
-	// A*アルゴリズムの開始点を設定
-	stAStarEvaluationList[stMapPosition.iX][stMapPosition.iY][stMapPosition.iZ].iG		= 0;	// 開始点からの移動コストを0に設定
-	stAStarEvaluationList[stMapPosition.iX][stMapPosition.iY][stMapPosition.iZ].iH		= 0;	// ゴールまでの推定コストを0に設定
-	stAStarEvaluationList[stMapPosition.iX][stMapPosition.iY][stMapPosition.iZ].iF		= 0;	// 総コストを0に設定
-	stAStarEvaluationList[stMapPosition.iX][stMapPosition.iY][stMapPosition.iZ].bOpen	= true;	// オープンリストに存在するように設定
+	// 現在の位置を取得
+	POSITION_3D_MAP currentPos = {
+		static_cast<int>(this->vecPosition.x / TILE_SIZE_PIXEL_X),
+		static_cast<int>(this->vecPosition.y / TILE_SIZE_PIXEL_Y),
+		static_cast<int>(this->vecPosition.z / TILE_SIZE_PIXEL_Z)
+	};
 
-	// A*アルゴリズムのオープンリストを探索
-	for (int x = 0; x < MAP_SIZE_X; x++)
-	{
-		for (int y = 0; y < MAP_SIZE_Y; y++)
-		{
-			for (int z = 0; z < MAP_SIZE_Z; z++)
-			{
-				// オープンリストに存在する座標であるなら確認を開始する
-				if (stAStarEvaluationList[x][y][z].bOpen == true)
-				{
-					// 現在の座標から隣接する座標を取得
-					for (int dx = -1; dx <= 1; dx++) {
-						for (int dz = -1; dz <= 1; dz++) {
-							if (dx == 0 && dz == 0) continue; // 現在の座標はスキップ
-							int nx = i + dx;
-							int ny = j + dy;
-							int nz = k; // Z座標は固定
-							// マップの範囲内かチェック
-							if (nx >= 0 && nx < MAP_SIZE_X && ny >= 0 && ny < MAP_SIZE_Y && nz >= 0 && nz < MAP_SIZE_Z) {
-								// 隣接座標の評価値を更新
-								stAStarEvaluationList[nx][ny][nz].iG = stAStarEvaluationList[i][j][k].iG + 1;
-								stAStarEvaluationList[nx][ny][nz].iH = abs(nx - stMainBasePosition.iX) + abs(ny - stMainBasePosition.iY);	// マンハッタン距離(XとZの差の絶対値を加算した値)
-								stAStarEvaluationList[nx][ny][nz].iF = stAStarEvaluationList[nx][ny][nz].iG + stAStarEvaluationList[nx][ny][nz].iH;
-								stAStarEvaluationList[nx][ny][nz].bOpen = true;
-							}
-						}
-					}
-					// オープンリストから現在の座標を削除し、クローズリストに追加
-					stAStarEvaluationList[i][j][k].bOpen = false;
-					stAStarEvaluationList[i][j][k].bClose = true;
-				}
-			}
+	// 次の目標位置を取得
+	POSITION_3D_MAP nextPos = vPath.front();
+	// 目標位置に到達した場合、次の位置へ移動
+	if (currentPos.iX == nextPos.iX && currentPos.iY == nextPos.iY && currentPos.iZ == nextPos.iZ) {
+		vPath.erase(vPath.begin()); // 目標位置を削除
+		if (vPath.empty()) {
+			return; // 目標位置がなくなった場合は終了
 		}
+		nextPos = vPath.front(); // 次の目標位置を取得
+	}
+	// 目標位置までの移動
+	float targetX = nextPos.iX * TILE_SIZE_PIXEL_X;
+	float targetY = nextPos.iY * TILE_SIZE_PIXEL_Y;
+	float targetZ = nextPos.iZ * TILE_SIZE_PIXEL_Z;
+	// 目標位置に向かって移動
+	this->vecPosition.x += (targetX - this->vecPosition.x) * 0.1f; // 10%の速さで目標位置に向かう
+	this->vecPosition.y += (targetY - this->vecPosition.y) * 0.1f; // 10%の速さで目標位置に向かう
+	this->vecPosition.z += (targetZ - this->vecPosition.z) * 0.1f; // 10%の速さで目標位置に向かう
+	// 位置が目標位置に近づいたら、位置を目標位置に設定
+	if (abs(this->vecPosition.x - targetX) < 0.1f) {
+		this->vecPosition.x = targetX;
+	}
+	if (abs(this->vecPosition.y - targetY) < 0.1f) {
+		this->vecPosition.y = targetY;
+	}
+	if (abs(this->vecPosition.z - targetZ) < 0.1f) {
+		this->vecPosition.z = targetZ;
+	}
+	// 位置が目標位置に到達した場合、次の目標位置へ移動
+	if (abs(this->vecPosition.x - targetX) < 0.1f &&
+		abs(this->vecPosition.y - targetY) < 0.1f &&
+		abs(this->vecPosition.z - targetZ) < 0.1f) {
+		vPath.erase(vPath.begin()); // 目標位置を削除
+	}
+	// 目標位置がなくなった場合は何もしない
+	if (vPath.empty()) {
+		return;
+	}
+	// 位置を更新
+	this->vecPosition.x = targetX;
+	this->vecPosition.y = targetY;
+	this->vecPosition.z = targetZ;
+	// キャラクターの向きを目標位置に向ける
+	float deltaX = targetX - this->vecPosition.x;
+	float deltaY = targetY - this->vecPosition.y;
+	float deltaZ = targetZ - this->vecPosition.z;
+	this->vecDirection.x = deltaX;
+	this->vecDirection.y = deltaY;
+	this->vecDirection.z = deltaZ;
+	// 向きを正規化
+	float length = sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+	if (length > 0.0f) {
+		this->vecDirection.x /= length;
+		this->vecDirection.y /= length;
+		this->vecDirection.z /= length;
+	}
+	else {
+		this->vecDirection.x = 0.0f;
+		this->vecDirection.y = 0.0f;
+		this->vecDirection.z = 0.0f;
 	}
 }
 
 // 描写
 void Character_Enemy_Normal_Walk::Draw()
 {
-
+    // カプセルを描写
+    DrawCapsule3D(this->vecPosition, VAdd(this->vecPosition, VGet(0, 64, 0)), 40.0f, 8, GetColor(0, 255, 0), GetColor(255, 255, 255), TRUE);
 }
 
 // リセット処理

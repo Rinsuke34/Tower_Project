@@ -13,7 +13,7 @@ Building_MainBase::Building_MainBase() : Building_Base()
 	this->iModelHandle = MV1LoadModel("resource/test/flag.mv1");
 
 	// マップ上の座標から実際の座標を設定
-	this->stMapPosition = { 64, 1, 64 };	// 座標を初期化
+	this->stMapPosition = { 32, 1, 32 };	// 座標を初期化
 	this->vecPosition.x = this->stMapPosition.iX * TILE_SIZE_PIXEL_X;							// X座標を設定
 	this->vecPosition.y = this->stMapPosition.iY * TILE_SIZE_PIXEL_Y - (TILE_SIZE_PIXEL_Y / 2);	// Y座標を設定
 	this->vecPosition.z = this->stMapPosition.iZ * TILE_SIZE_PIXEL_Z;							// Z座標を設定

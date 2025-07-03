@@ -23,10 +23,11 @@ struct MAP_DATA
 // 評価リスト(A*アルゴリズム用)
 struct ASTAR_EVALUATION_LIST
 {
-	int iId;		// ID
-	int iG;			// スタートからのコスト
-	int iH;			// ゴールまでの予想コスト
-	int iF;			// 総コスト
-	bool bOpen;		// オープンリストにあるかどうか
-	bool bClose;	// クローズリストにあるかどうか
+	int iId;					// ID
+	int iG;						// スタートからのコスト
+	int iH;						// ゴールまでの予想コスト
+	int iF;						// 総コスト
+	bool bOpen;					// オープンリストにあるかどうか
+	bool bClose;				// クローズリストにあるかどうか
+	POSITION_3D_MAP	stParent;	// 親座標
 };
