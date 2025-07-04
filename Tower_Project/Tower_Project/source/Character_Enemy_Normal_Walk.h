@@ -22,5 +22,5 @@ class Character_Enemy_Normal_Walk : public Character_Base
 
 	protected:
 		// ˆÚ“®ƒ‹[ƒg
-		std::vector<POSITION_3D_MAP> vPath;
+		std::vector<POSITION_3D_MAP> aMovePath;
 };

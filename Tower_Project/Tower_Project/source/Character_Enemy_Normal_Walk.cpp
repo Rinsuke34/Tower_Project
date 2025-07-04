@@ -9,14 +9,14 @@
 #include "ConstantDefine.h"
 
 Character_Enemy_Normal_Walk::Character_Enemy_Normal_Walk() : Character_Base()  
-{  
-   // 移動ルートをA*アルゴリズムで計算  
-   // 移動ルートをA*アルゴリズムで計算  
+{
+    // 移動ルートをA*アルゴリズムで計算
+    // ※X軸とZ軸の二次元で判断する
+	
+    // スタート座標を設定
+	this->vecPosition = VGet(64, 0, 64); // 初期位置（ワールド座標）
 
-// プレイヤーの初期ワールド座標を設定
-    this->vecPosition = VGet(64, 0, 64); // 初期位置（ワールド座標）
-
-    // スタート位置をマップ座標に変換
+    // スタート座標をマップ座標に変換
     POSITION_3D_MAP stStart = {
         static_cast<int>(this->vecPosition.x / TILE_SIZE_PIXEL_X),
         static_cast<int>(this->vecPosition.y / TILE_SIZE_PIXEL_Y),
@@ -30,70 +30,59 @@ Character_Enemy_Normal_Walk::Character_Enemy_Normal_Walk() : Character_Base()
     if (it == pObj->aMapBuildingData.end()) return;
     POSITION_3D_MAP stGoal = it->second.stPosition;
 
-    // マップの3D配列参照
+    // マップデータ(足場)(3次元配列)の取得
     auto& aiMapData = pObj->aiMapData;
 
-    // 評価値リストをヒープ確保（一次元配列で3Dに見立てる）
-    const int totalSize = MAP_SIZE_X * MAP_SIZE_Y * MAP_SIZE_Z;
-    std::unique_ptr<ASTAR_EVALUATION_LIST[]> stAStarEvaluationList(new ASTAR_EVALUATION_LIST[totalSize]);
+    // 評価値リストを作成
+	std::vector<ASTAR_EVALUATION_LIST> stAStarEvaluationList;
 
-    // 3Dインデックスを1次元に変換するマクロ
-#define ASTAR_INDEX(x, y, z) ((x) + (y) * MAP_SIZE_X + (z) * MAP_SIZE_X * MAP_SIZE_Y)
+    // スタート地点の情報を追加
+	ASTAR_EVALUATION_LIST stAddStart;
+    stAddStart.iId      = 0;
+	stAddStart.iG       = 0;
+    stAddStart.iH       = abs(stStart.iX - stGoal.iX) + abs(stStart.iZ - stGoal.iZ);  // ゴールまでのコストはマンハッタン距離で算出(Y軸は考慮しない)
+    stAddStart.iF       = stAddStart.iG + stAddStart.iH;
+    stAddStart.bOpen    = true;
+    stAddStart.bClose   = false;
+    stAddStart.stParent = {-1, -1, -1};
+	stAStarEvaluationList.push_back(stAddStart);
 
-// 評価リスト初期化
-    for (int x = 0; x < MAP_SIZE_X; x++) {
-        for (int y = 0; y < MAP_SIZE_Y; y++) {
-            for (int z = 0; z < MAP_SIZE_Z; z++) {
-                auto& node = stAStarEvaluationList[ASTAR_INDEX(x, y, z)];
-                node.iG = 0;                         // 開始点からの移動コスト
-                node.iH = 0;                         // ゴールまでの推定コスト
-                node.iF = 0;                         // 総評価値 = G + H
-                node.bOpen = false;                  // オープンリストに入っているか
-                node.bClose = false;                 // クローズリストに入っているか
-                node.stParent = { -1, -1, -1 };      // 親ノード（経路復元用）
-            }
-        }
-    }
+    // 確認で使用する変数定義
+	bool            bGoalFoundFlg       = false;            // ゴール到達フラグ
+	POSITION_3D_MAP stCurrentPosition   = { -1, -1, -1 };   // 現在探索中の座標
 
-    // 開始ノードの初期設定
-    auto& startNode = stAStarEvaluationList[ASTAR_INDEX(stStart.iX, stStart.iY, stStart.iZ)];
-    startNode.iG = 0;
-    startNode.iH = abs(stStart.iX - stGoal.iX) + abs(stStart.iY - stGoal.iY) + abs(stStart.iZ - stGoal.iZ); // マンハッタン距離
-    startNode.iF = startNode.iG + startNode.iH;
-    startNode.bOpen = true;
-
-    bool bGoalFound = false;
-    POSITION_3D_MAP stCurrent; // 現在探索中のノード
-
+    // A*アルゴリズムを用いた経路探索処理
     while (true)
     {
-        // オープンリストから最小F値ノードを探索
-        int iMinF = INT_MAX;
-        bool bFound = false;
+		// 評価値リスト内のオープンリストからF値(類型コストが最小のノード)を探索
+		int     iMinF       = INT_MAX;  // 最小F値
+		bool    bFoundFlg   = false;    // 最小F値ノードが見つかったかのフラグ
 
-        for (int x = 0; x < MAP_SIZE_X; x++) {
-            for (int y = 0; y < MAP_SIZE_Y; y++) {
-                for (int z = 0; z < MAP_SIZE_Z; z++) {
-                    auto& node = stAStarEvaluationList[ASTAR_INDEX(x, y, z)];
-                    if (node.bOpen && node.iF < iMinF) {
-                        iMinF = node.iF;
-                        stCurrent = { x, y, z };
-                        bFound = true;
-                    }
-                }
-            }
+        for (auto& node : stAStarEvaluationList)
+        {
+            // オープンリスト内かつF値が最小であるか
+            if (node.bOpen && node.iF < iMinF)
+            {
+				// F値が最小のノードである場合
+				bFoundFlg           = true;     // 最小F値ノードが見つかったフラグを立てる
+				iMinF               = node.iF;  // 最小F値を更新
+				stCurrentPosition   = { node.stParent.iX, node.stParent.iY, node.stParent.iZ }; // 現在探索中の座標を更新
+			}
         }
 
-        if (!bFound) {
-            // オープンリストが空→探索失敗
+        // 最小F値ノードが見つからなかった場合、探索失敗とする
+        if (!bFoundFlg)
+        {
             break;
         }
 
-        // ゴールに到達したか確認（必要なら Y 方向の誤差許容も追加可能）
-        if (stCurrent.iX == stGoal.iX && stCurrent.iY == stGoal.iY && stCurrent.iZ == stGoal.iZ) {
-            bGoalFound = true;
-            break;
+        // ゴールに到達した場合、探索成功とする
+        if (stCurrentPosition.iX == stGoal.iX && stCurrentPosition.iZ == stGoal.iZ)
+        {
+            bGoalFoundFlg = true;
+			break;
         }
+
 
         // 現在ノードをクローズリストへ移動
         auto& currentNode = stAStarEvaluationList[ASTAR_INDEX(stCurrent.iX, stCurrent.iY, stCurrent.iZ)];
@@ -186,8 +175,6 @@ Character_Enemy_Normal_Walk::Character_Enemy_Normal_Walk() : Character_Base()
         vPath.push_back(stStart); // 始点も追加
         std::reverse(vPath.begin(), vPath.end()); // 順路を逆転
     }
-
-#undef ASTAR_INDEX
 }
 
 // デストラクタ
