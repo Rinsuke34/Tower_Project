@@ -29,5 +29,6 @@ struct ASTAR_EVALUATION_LIST
 	int iF;						// 総コスト
 	bool bOpen;					// オープンリストにあるかどうか
 	bool bClose;				// クローズリストにあるかどうか
+	POSITION_3D_MAP stPosition;	// 現在の座標
 	POSITION_3D_MAP	stParent;	// 親座標
 };

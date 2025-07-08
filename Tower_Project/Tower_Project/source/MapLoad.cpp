@@ -28,7 +28,7 @@ void Scene_World::MapLoad()
                 {
                     pDataList_Object->aiMapData[iX][iY][iZ] = json["MapData"].at(iY).at(iX).at(iZ);
                 }
-                catch (const std::exception& e)
+                catch (const std::exception& ErrorCode)
                 {
                     // 範囲外アクセス時の処理
                     pDataList_Object->aiMapData[iX][iY][iZ] = 0;

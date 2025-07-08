@@ -36,20 +36,21 @@ Character_Enemy_Normal_Walk::Character_Enemy_Normal_Walk() : Character_Base()
     // 評価値リストを作成
 	std::vector<ASTAR_EVALUATION_LIST> stAStarEvaluationList;
 
-    // スタート地点の情報を追加
+    // スタート地点の情報をオープンリストとして評価値リストへ追加
 	ASTAR_EVALUATION_LIST stAddStart;
-    stAddStart.iId      = 0;
-	stAddStart.iG       = 0;
-    stAddStart.iH       = abs(stStart.iX - stGoal.iX) + abs(stStart.iZ - stGoal.iZ);  // ゴールまでのコストはマンハッタン距離で算出(Y軸は考慮しない)
-    stAddStart.iF       = stAddStart.iG + stAddStart.iH;
-    stAddStart.bOpen    = true;
-    stAddStart.bClose   = false;
-    stAddStart.stParent = {-1, -1, -1};
+    stAddStart.iId			= ASTAR_ID_START;	// スタートノードに設定
+	stAddStart.iG			= 0;
+    stAddStart.iH			= abs(stStart.iX - stGoal.iX) + abs(stStart.iZ - stGoal.iZ);  // ゴールまでのコストはマンハッタン距離で算出(Y軸は考慮しない)
+    stAddStart.iF			= stAddStart.iG + stAddStart.iH;
+    stAddStart.bOpen		= true;
+    stAddStart.bClose		= false;
+	stAddStart.stPosition	= stStart; // 現在の座標をスタート座標に設定
+    stAddStart.stParent		= {-1, -1, -1};
 	stAStarEvaluationList.push_back(stAddStart);
 
     // 確認で使用する変数定義
-	bool            bGoalFoundFlg       = false;            // ゴール到達フラグ
-	POSITION_3D_MAP stCurrentPosition   = { -1, -1, -1 };   // 現在探索中の座標
+	bool            bGoalFoundFlg       = false;			// ゴール到達フラグ
+	POSITION_3D_MAP stCurrentPosition   = { -1, -1, -1 };	// 現在探索中の座標
 
     // A*アルゴリズムを用いた経路探索処理
     while (true)
@@ -57,6 +58,7 @@ Character_Enemy_Normal_Walk::Character_Enemy_Normal_Walk() : Character_Base()
 		// 評価値リスト内のオープンリストからF値(類型コストが最小のノード)を探索
 		int     iMinF       = INT_MAX;  // 最小F値
 		bool    bFoundFlg   = false;    // 最小F値ノードが見つかったかのフラグ
+        int     iGetG       = 0;        // 最小F値のG値(スタート地点からの総コスト)
 
         for (auto& node : stAStarEvaluationList)
         {
@@ -66,7 +68,8 @@ Character_Enemy_Normal_Walk::Character_Enemy_Normal_Walk() : Character_Base()
 				// F値が最小のノードである場合
 				bFoundFlg           = true;     // 最小F値ノードが見つかったフラグを立てる
 				iMinF               = node.iF;  // 最小F値を更新
-				stCurrentPosition   = { node.stParent.iX, node.stParent.iY, node.stParent.iZ }; // 現在探索中の座標を更新
+				stCurrentPosition   = { node.stPosition.iX, node.stPosition.iY, node.stPosition.iZ }; // 現在探索中の座標を更新
+				iGetG               = node.iG;  // 最小F値のG値を更新
 			}
         }
 
@@ -76,105 +79,219 @@ Character_Enemy_Normal_Walk::Character_Enemy_Normal_Walk() : Character_Base()
             break;
         }
 
-        // ゴールに到達した場合、探索成功とする
-        if (stCurrentPosition.iX == stGoal.iX && stCurrentPosition.iZ == stGoal.iZ)
+		// 最小F値ノードを探索したので、現在のノードをオープンリストからクローズリストへ移動
+        for (auto& node : stAStarEvaluationList)
         {
-            bGoalFoundFlg = true;
-			break;
-        }
-
-
-        // 現在ノードをクローズリストへ移動
-        auto& currentNode = stAStarEvaluationList[ASTAR_INDEX(stCurrent.iX, stCurrent.iY, stCurrent.iZ)];
-        currentNode.bOpen = false;
-        currentNode.bClose = true;
-
-        // 隣接（X/Z方向）のノードを探索
-        for (int iX = -1; iX <= 1; iX++) {
-            for (int iZ = -1; iZ <= 1; iZ++) {
-                if ((iX == 0 && iZ == 0) || (iX != 0 && iZ != 0)) continue; // X/Zのみに移動可
-
-                int iSearchX = stCurrent.iX + iX;
-                int iSearchY = stCurrent.iY;
-                int iSearchZ = stCurrent.iZ;
-
-                // 範囲外ならスキップ
-                if (iSearchX < 0 || iSearchX >= MAP_SIZE_X || iSearchZ < 0 || iSearchZ >= MAP_SIZE_Z)
-                    continue;
-
-                int iNewY = iSearchY;
-                int iMoveCost = 1;
-
-                if (aiMapData[iSearchX][iSearchY][iSearchZ] != 0) {
-                    // 足場がある → 上にスペースがあるか確認
-                    if (iSearchY + 1 < MAP_SIZE_Y && aiMapData[iSearchX][iSearchY + 1][iSearchZ] == 0) {
-                        iNewY = iSearchY + 1; // 上に移動
-                        iMoveCost = 2;       // 移動コスト2倍
-                    }
-                    else {
-                        continue; // 上にも詰まっている → 移動不可
-                    }
-                }
-                else {
-                    // 足場がない → 下に足場があるか確認
-                    int y = iSearchY - 1;
-                    bool bFound = false;
-                    while (y >= 0) {
-                        if (aiMapData[iSearchX][y][iSearchZ] != 0) {
-                            iNewY = y + 1; // 足場の上に移動
-                            bFound = true;
-                            break;
-                        }
-                        y--;
-                    }
-                    if (!bFound) continue; // 足場が見つからない → 移動不可
-                }
-
-                // 新Yが範囲外ならスキップ
-                if (iNewY < 0 || iNewY >= MAP_SIZE_Y)
-                    continue;
-
-                auto& nextNode = stAStarEvaluationList[ASTAR_INDEX(iSearchX, iNewY, iSearchZ)];
-
-                if (nextNode.bClose)
-                    continue; // すでに探索済み
-
-                // G, H, Fの再計算
-                int iG = currentNode.iG + iMoveCost;
-                int iH = abs(iSearchX - stGoal.iX) + abs(iNewY - stGoal.iY) + abs(iSearchZ - stGoal.iZ);
-                int iF = iG + iH;
-
-                // より良い経路なら更新
-                if (nextNode.bOpen) {
-                    if (iF < nextNode.iF) {
-                        nextNode.iG = iG;
-                        nextNode.iH = iH;
-                        nextNode.iF = iF;
-                        nextNode.stParent = stCurrent;
-                    }
-                }
-                else {
-                    // 初めての訪問 → オープンリストに追加
-                    nextNode.iG = iG;
-                    nextNode.iH = iH;
-                    nextNode.iF = iF;
-                    nextNode.bOpen = true;
-                    nextNode.stParent = stCurrent;
-                }
+            if (node.stPosition.iX == stCurrentPosition.iX && node.stPosition.iY == stCurrentPosition.iY && node.stPosition.iZ == stCurrentPosition.iZ)
+            {
+                node.bOpen  = false; // オープンリストから削除
+                node.bClose = true;  // クローズリストに追加
+                break;
             }
         }
+
+        // 隣接(X/Z方向)のノードを探索
+        const int POS_INDEX = 4;
+		POSITION_3D_MAP astNextPosition[POS_INDEX] =
+        {
+			{ stCurrentPosition.iX - 1, stCurrentPosition.iY, stCurrentPosition.iZ }, // 左
+			{ stCurrentPosition.iX + 1, stCurrentPosition.iY, stCurrentPosition.iZ }, // 右
+			{ stCurrentPosition.iX, stCurrentPosition.iY, stCurrentPosition.iZ - 1 }, // 前
+			{ stCurrentPosition.iX, stCurrentPosition.iY, stCurrentPosition.iZ + 1 }  // 奥
+		};
+
+        for (int iIndex = 0; iIndex < POS_INDEX; iIndex++)
+        {
+            int iMoveCost = MOVE_COST_DEFAULT;  // 移動コスト
+
+            // 確認する座標を取得
+			int iSearchX = astNextPosition[iIndex].iX;
+			int iSearchY = astNextPosition[iIndex].iY;
+			int iSearchZ = astNextPosition[iIndex].iZ;
+
+			// マップの範囲外ならスキップ
+            if (iSearchX < 0 || MAP_SIZE_X <= iSearchX || iSearchZ < 0 || MAP_SIZE_Z <= iSearchZ)
+            {
+				continue;
+            }
+
+            // 移動先に足場があるか確認
+            if (aiMapData[iSearchX][iSearchY][iSearchZ] != 0)
+            {
+                // 足場がある場合
+                // 現在の座標が最上段であるならスキップ
+				if (stCurrentPosition.iY == MAP_SIZE_Y - 1)
+                {
+					continue;
+				}
+
+				// 元座標と移動先の一つ上の座標に足場があるか確認
+                // ※どちらかに足場がある場合、移動不可とする
+                if (aiMapData[stCurrentPosition.iX][stCurrentPosition.iY + 1][stCurrentPosition.iZ] != 0 ||
+                    aiMapData[iSearchX][iSearchY + 1][iSearchZ] != 0)
+                {
+                    continue;
+                }
+
+                // 確認対象のノード情報を一つ上の段とする
+                iSearchY += 1;
+
+                // 上方向の移動コストを設定
+				iMoveCost = MOVE_COST_UP;
+            }
+            else
+            {
+                // 足場がない場合
+                // 現在の座標が最下段であるならスキップ
+                if (stCurrentPosition.iY == 0)
+                {
+                    continue;
+                }
+
+                // 移動先座標を基準とし、足場が見つかるまで下方向へサーチ
+				int     iPlatformSearchY    = iSearchY; // 足場のあるY座標
+				bool    bFoundPlatform      = false;    // 足場が見つかったかのフラグ
+                for (int iY = iSearchY; iY >= 0; iY--)
+                {
+                    // 足場があるか確認
+					if (aiMapData[iSearchX][iY][iSearchZ] != 0)
+                    {
+						iPlatformSearchY    = iY;   // 足場の座標を設定
+						bFoundPlatform      = true; // 足場が見つかったフラグを立てる
+						break;
+					}
+                }
+
+				// 足場が見つからなかった場合、スキップ
+                if (!bFoundPlatform)
+                {
+                    continue;
+                }
+
+				// 足場が見つかった場合、移動先座標を足場の上に設定
+				iSearchY = iPlatformSearchY + 1;
+
+				// 下方向の移動コストを設定
+				iMoveCost = MOVE_COST_DOWN;
+            }
+
+            // 移動先座標の情報をまとめる
+			ASTAR_EVALUATION_LIST stAddNode;
+			stAddNode.iId			= ASTER_ID_NONE;				// 特に何もないノードとして設定
+			stAddNode.iG			= iGetG + iMoveCost;            // 移動コストを加算
+			stAddNode.iH			= abs(iSearchX - stGoal.iX) + abs(iSearchY - stGoal.iY) + abs(iSearchZ - stGoal.iZ); // ゴールまでのコストはマンハッタン距離で算出(Y軸は考慮しない)
+			stAddNode.iF			= stAddNode.iG + stAddNode.iH;  // 総コストを計算
+			stAddNode.bOpen			= true;
+			stAddNode.bClose		= false;
+			stAddNode.stPosition.iX	= iSearchX;						// 移動先座標を設定
+			stAddNode.stPosition.iY	= iSearchY;						// 移動先座標を設定
+			stAddNode.stPosition.iZ	= iSearchZ;						// 移動先座標を設定
+			stAddNode.stParent		= stCurrentPosition;            // 親座標を現在の座標に設定
+
+			// すでに評価値リストに同じ座標が存在するか確認
+			// ※同じ座標が存在する場合は、より良い経路であれば更新する
+			bool bAddNodeFlg    = true; // ノードを追加するかのフラグ
+            for (auto& node : stAStarEvaluationList)
+            {
+                // 完全に同じ座標であるか確認
+                if (node.stPosition.iX == iSearchX && node.stPosition.iY == iSearchY && node.stPosition.iZ == iSearchZ)
+                {
+					bAddNodeFlg = false;
+
+      //              // 総コストが現在のノードよりも大きいか確認
+      //              if (stAddNode.iF <= node.iF)
+      //              {
+      //                  // 現在登録されているノードの情報を更新するのでノードは追加しない
+						//bAddNodeFlg = false;
+
+      //                  // コスト関連、クローズ・オープンリストの状態、親座標を更新
+						//node.iG         = stAddNode.iG;
+						//node.iH         = stAddNode.iH;
+						//node.iF         = stAddNode.iF;
+						//node.bOpen      = true;
+						//node.bClose     = false;
+						//node.stParent   = stCurrentPosition;
+
+						//break;
+      //              }
+                }
+            }
+
+			// ノードを追加するフラグが立っている場合、評価値リストに追加
+            if (bAddNodeFlg)
+            {
+				// ゴールに到達した場合、探索成功とする
+				if (stCurrentPosition.iX == stGoal.iX && stCurrentPosition.iZ == stGoal.iZ)
+				{
+					bGoalFoundFlg = true;
+					stAddNode.iId = ASTAR_ID_GOAL; // ゴールノードに設定
+
+					// 移動先座標をオープンリストとして評価値リストへ追加
+					stAStarEvaluationList.push_back(stAddNode);
+					break;
+				}
+				else
+				{
+					// 移動先座標をオープンリストとして評価値リストへ追加
+					stAStarEvaluationList.push_back(stAddNode);
+				}
+            }
+        }
+
+		// 探索が終了した場合、ループを抜ける
+		if (bGoalFoundFlg)
+		{
+			break;
+		}
     }
 
-    // 探索成功なら経路を復元
-    if (bGoalFound) {
-        POSITION_3D_MAP stTrace = stGoal;
-        while (!(stTrace.iX == stStart.iX && stTrace.iY == stStart.iY && stTrace.iZ == stStart.iZ)) {
-            vPath.push_back(stTrace);
-            stTrace = stAStarEvaluationList[ASTAR_INDEX(stTrace.iX, stTrace.iY, stTrace.iZ)].stParent;
-        }
-        vPath.push_back(stStart); // 始点も追加
-        std::reverse(vPath.begin(), vPath.end()); // 順路を逆転
-    }
+	// 探索が成功したか確認
+	if (bGoalFoundFlg)
+	{
+		// 経路を復元し、移動ルートに追加する
+		// ※ここではゴールからスタートへ向けて経路を復元する
+		bool			bStartFound		= false;			// スタート座標が見つかったかのフラグ
+		POSITION_3D_MAP stCheckPosition	= { -1, -1, -1 };	// 現在のチェック座標を初期化
+
+		// 評価値リストをループして、ゴールからスタートへ向けて経路を復元
+		while (true)
+		{
+			// 移動前座標を評価値リストから検索し、親座標を見つける
+			for (auto& Evaluation : stAStarEvaluationList)
+			{
+				// チェック座標が一致するノードを探す
+				// ※現在のチェック座標が初期状態である場合、IDがゴールノードの情報を取得
+				if ((Evaluation.stPosition.iX == stCheckPosition.iX &&
+					 Evaluation.stPosition.iY == stCheckPosition.iY &&
+					 Evaluation.stPosition.iZ == stCheckPosition.iZ) ||
+					(Evaluation.iId == ASTAR_ID_GOAL &&
+					stCheckPosition.iX == -1 &&
+					stCheckPosition.iY == -1 &&
+					stCheckPosition.iZ == -1))
+				{
+					// 対象のノードが見つかった場合、チェック座標を親座標に更新する
+					stCheckPosition = Evaluation.stParent;
+
+					// ノードの座標を移動ルートに追加
+					POSITION_3D_MAP stAddMovePath = { Evaluation.stPosition.iX, Evaluation.stPosition.iY, Evaluation.stPosition.iZ };
+					this->aMovePath.push_back(stAddMovePath);
+
+					// スタート座標に到達した場合、フラグを立てる
+					if (Evaluation.iId == ASTAR_ID_START)
+					{
+						bStartFound = true;
+						break;
+					}
+				}
+			}
+
+			// スタート座標に到達した場合、ループを抜ける
+			if (bStartFound)
+			{
+				break;
+			}
+		}
+	}
 }
 
 // デストラクタ
@@ -192,79 +309,7 @@ void Character_Enemy_Normal_Walk::Initialization()
 // 更新
 void Character_Enemy_Normal_Walk::Update()
 {
-	// 移動ルートが設定されていない場合は何もしない
-	if (vPath.empty()) {
-		return;
-	}
-
-	// 現在の位置を取得
-	POSITION_3D_MAP currentPos = {
-		static_cast<int>(this->vecPosition.x / TILE_SIZE_PIXEL_X),
-		static_cast<int>(this->vecPosition.y / TILE_SIZE_PIXEL_Y),
-		static_cast<int>(this->vecPosition.z / TILE_SIZE_PIXEL_Z)
-	};
-
-	// 次の目標位置を取得
-	POSITION_3D_MAP nextPos = vPath.front();
-	// 目標位置に到達した場合、次の位置へ移動
-	if (currentPos.iX == nextPos.iX && currentPos.iY == nextPos.iY && currentPos.iZ == nextPos.iZ) {
-		vPath.erase(vPath.begin()); // 目標位置を削除
-		if (vPath.empty()) {
-			return; // 目標位置がなくなった場合は終了
-		}
-		nextPos = vPath.front(); // 次の目標位置を取得
-	}
-	// 目標位置までの移動
-	float targetX = nextPos.iX * TILE_SIZE_PIXEL_X;
-	float targetY = nextPos.iY * TILE_SIZE_PIXEL_Y;
-	float targetZ = nextPos.iZ * TILE_SIZE_PIXEL_Z;
-	// 目標位置に向かって移動
-	this->vecPosition.x += (targetX - this->vecPosition.x) * 0.1f; // 10%の速さで目標位置に向かう
-	this->vecPosition.y += (targetY - this->vecPosition.y) * 0.1f; // 10%の速さで目標位置に向かう
-	this->vecPosition.z += (targetZ - this->vecPosition.z) * 0.1f; // 10%の速さで目標位置に向かう
-	// 位置が目標位置に近づいたら、位置を目標位置に設定
-	if (abs(this->vecPosition.x - targetX) < 0.1f) {
-		this->vecPosition.x = targetX;
-	}
-	if (abs(this->vecPosition.y - targetY) < 0.1f) {
-		this->vecPosition.y = targetY;
-	}
-	if (abs(this->vecPosition.z - targetZ) < 0.1f) {
-		this->vecPosition.z = targetZ;
-	}
-	// 位置が目標位置に到達した場合、次の目標位置へ移動
-	if (abs(this->vecPosition.x - targetX) < 0.1f &&
-		abs(this->vecPosition.y - targetY) < 0.1f &&
-		abs(this->vecPosition.z - targetZ) < 0.1f) {
-		vPath.erase(vPath.begin()); // 目標位置を削除
-	}
-	// 目標位置がなくなった場合は何もしない
-	if (vPath.empty()) {
-		return;
-	}
-	// 位置を更新
-	this->vecPosition.x = targetX;
-	this->vecPosition.y = targetY;
-	this->vecPosition.z = targetZ;
-	// キャラクターの向きを目標位置に向ける
-	float deltaX = targetX - this->vecPosition.x;
-	float deltaY = targetY - this->vecPosition.y;
-	float deltaZ = targetZ - this->vecPosition.z;
-	this->vecDirection.x = deltaX;
-	this->vecDirection.y = deltaY;
-	this->vecDirection.z = deltaZ;
-	// 向きを正規化
-	float length = sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
-	if (length > 0.0f) {
-		this->vecDirection.x /= length;
-		this->vecDirection.y /= length;
-		this->vecDirection.z /= length;
-	}
-	else {
-		this->vecDirection.x = 0.0f;
-		this->vecDirection.y = 0.0f;
-		this->vecDirection.z = 0.0f;
-	}
+	
 }
 
 // 描写
