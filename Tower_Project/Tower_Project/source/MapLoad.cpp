@@ -40,12 +40,12 @@ void Scene_World::MapLoad()
     // メイン拠点を追加
 	Building_MainBase* pAddBuilding = new Building_MainBase();
 	pDataList_Object->SetBuilding(pAddBuilding);
-	pAddBuilding->SetPosition({ 16, 1, 16 });
+	pAddBuilding->SetPosition({ 32, 1, 32 });
 
 	// エネミーを追加
 	Character_Enemy_Normal_Walk* pAddCharacter = new Character_Enemy_Normal_Walk();
 	pDataList_Object->SetCharacter(pAddCharacter);
-	pAddCharacter->SetPosition({ 64, 0, 64 });
+	pAddCharacter->SetPosition({ 8, 1, 8 });
 
     // オブジェクトの初期化
 	pDataList_Object->Object_Initialization();

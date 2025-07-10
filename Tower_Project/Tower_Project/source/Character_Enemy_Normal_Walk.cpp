@@ -24,12 +24,13 @@ void Character_Enemy_Normal_Walk::Initialization()
 {
     // 移動ルートをA*アルゴリズムで計算
     // ※X軸とZ軸の二次元で判断する
-    // スタート座標をマップ座標に変換
-    POSITION_3D_MAP stStart = {
-        static_cast<int>(this->vecPosition.x / TILE_SIZE_PIXEL_X),
-        static_cast<int>(this->vecPosition.y / TILE_SIZE_PIXEL_Y),
-        static_cast<int>(this->vecPosition.z / TILE_SIZE_PIXEL_Z)
-    };
+
+    // マップ上の座標から実際の座標を設定
+    this->vecPosition.x = this->stMapPosition.iX * TILE_SIZE_PIXEL_X;							// X座標を設定
+    this->vecPosition.y = this->stMapPosition.iY * TILE_SIZE_PIXEL_Y - (TILE_SIZE_PIXEL_Y / 2);	// Y座標を設定
+    this->vecPosition.z = this->stMapPosition.iZ * TILE_SIZE_PIXEL_Z;							// Z座標を設定
+
+    POSITION_3D_MAP stStart = this->stMapPosition;
 
     // ゴール（拠点）の座標を取得
     DataList_Object* pObj = static_cast<DataList_Object*>(gpDataListServer->GetDataList("DataList_Object"));
