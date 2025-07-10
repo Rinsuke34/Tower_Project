@@ -15,29 +15,29 @@ DataList_Object::DataList_Object() : DataListBase("DataList_Object")
 DataList_Object::~DataList_Object()
 {
 	/* メモリ開放 */
-	for (auto pCharacter : this->paCharacterList)	{	delete pCharacter;	}	// キャラクターのメモリ開放
 	for (auto pBuilding : this->paBuildingList)		{	delete pBuilding;	}	// 建造物のメモリ開放
+	for (auto pCharacter : this->paCharacterList)	{	delete pCharacter; }	// キャラクターのメモリ開放
 }
 
 // リスト内オブジェクト初期化
 void DataList_Object::Object_Initialization()
-{
-	for (auto pCharacter : this->paCharacterList)	{	pCharacter->Initialization();	}	// キャラクター初期化
+{	
 	for (auto pBuilding : this->paBuildingList)		{	pBuilding->Initialization();	}	// 建造物初期化
+	for (auto pCharacter : this->paCharacterList)	{	pCharacter->Initialization();	}	// キャラクター初期化
 }
 
 // リスト内オブジェクト更新
 void DataList_Object::Object_Update()
 {
-	for (auto pCharacter : this->paCharacterList)	{	pCharacter->Update();	}	// キャラクター更新
 	for (auto pBuilding : this->paBuildingList)		{	pBuilding->Update();	}	// 建造物更新
+	for (auto pCharacter : this->paCharacterList)	{	pCharacter->Update();	}	// キャラクター更新
 }
 
 // リスト内オブジェクト描写
 void DataList_Object::Object_Draw()
 {
-	for (auto pCharacter : this->paCharacterList)	{ pCharacter->Draw();	}	// キャラクター描写
-	for (auto pBuilding : this->paBuildingList)		{ pBuilding->Draw();	}	// 建造物描写
+	for (auto pBuilding : this->paBuildingList)		{	pBuilding->Draw();	}	// 建造物描写
+	for (auto pCharacter : this->paCharacterList)	{	pCharacter->Draw();	}	// キャラクター描写
 }
 
 // リスト内オブジェクト削除(削除フラグが立っているものを削除)

@@ -37,9 +37,16 @@ void Scene_World::MapLoad()
         }
     }
 
-    // メイン拠点を追加(仮)
-	pDataList_Object->SetBuilding(new Building_MainBase());
+    // メイン拠点を追加
+	Building_MainBase* pAddBuilding = new Building_MainBase();
+	pDataList_Object->SetBuilding(pAddBuilding);
+	pAddBuilding->SetPosition({ 16, 1, 16 });
 
-	/* エネミーを追加(仮) */
-	pDataList_Object->SetCharacter(new Character_Enemy_Normal_Walk());
+	// エネミーを追加
+	Character_Enemy_Normal_Walk* pAddCharacter = new Character_Enemy_Normal_Walk();
+	pDataList_Object->SetCharacter(pAddCharacter);
+	pAddCharacter->SetPosition({ 64, 0, 64 });
+
+    // オブジェクトの初期化
+	pDataList_Object->Object_Initialization();
 }
