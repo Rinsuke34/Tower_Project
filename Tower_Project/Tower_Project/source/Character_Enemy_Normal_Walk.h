@@ -21,6 +21,8 @@ class Character_Enemy_Normal_Walk : public Character_Base
 		virtual void	Reset()				override;	// リセット処理
 
 	protected:
-		// 移動ルート
-		std::vector<POSITION_3D_MAP> aMovePath;
+		std::vector<POSITION_3D_MAP>	aMovePath;					// 移動ルート
+		int								iMovePathIndex;				// 現在の移動ルートのインデックス
+		VECTOR							vecNowMoveStartPosition;	// 現在の移動開始座標
+		VECTOR							vecNowMoveEndPosition;		// 現在の移動終了座標
 };

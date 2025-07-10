@@ -196,24 +196,9 @@ Character_Enemy_Normal_Walk::Character_Enemy_Normal_Walk() : Character_Base()
                 // 完全に同じ座標であるか確認
                 if (node.stPosition.iX == iSearchX && node.stPosition.iY == iSearchY && node.stPosition.iZ == iSearchZ)
                 {
+					// 同じ座標が存在する場合、ノード追加を行わない
 					bAddNodeFlg = false;
-
-      //              // 総コストが現在のノードよりも大きいか確認
-      //              if (stAddNode.iF <= node.iF)
-      //              {
-      //                  // 現在登録されているノードの情報を更新するのでノードは追加しない
-						//bAddNodeFlg = false;
-
-      //                  // コスト関連、クローズ・オープンリストの状態、親座標を更新
-						//node.iG         = stAddNode.iG;
-						//node.iH         = stAddNode.iH;
-						//node.iF         = stAddNode.iF;
-						//node.bOpen      = true;
-						//node.bClose     = false;
-						//node.stParent   = stCurrentPosition;
-
-						//break;
-      //              }
+					break;
                 }
             }
 
@@ -288,6 +273,23 @@ Character_Enemy_Normal_Walk::Character_Enemy_Normal_Walk() : Character_Base()
 			// スタート座標に到達した場合、ループを抜ける
 			if (bStartFound)
 			{
+				// 移動ルートのインデックスを初期化
+				this->iMovePathIndex = static_cast<int>(this->aMovePath.size()) - 1;
+
+				// 現在の移動開始座標を設定
+				this->vecNowMoveStartPosition = VGet(
+					static_cast<float>(this->aMovePath[this->iMovePathIndex].iX * TILE_SIZE_PIXEL_X),
+					static_cast<float>(this->aMovePath[this->iMovePathIndex].iY * TILE_SIZE_PIXEL_Y),
+					static_cast<float>(this->aMovePath[this->iMovePathIndex].iZ * TILE_SIZE_PIXEL_Z)
+				);
+
+				// 現在の移動終了座標を設定
+				this->vecNowMoveEndPosition = VGet(
+					static_cast<float>(this->aMovePath[this->iMovePathIndex - 1].iX * TILE_SIZE_PIXEL_X),
+					static_cast<float>(this->aMovePath[this->iMovePathIndex - 1].iY * TILE_SIZE_PIXEL_Y),
+					static_cast<float>(this->aMovePath[this->iMovePathIndex - 1].iZ * TILE_SIZE_PIXEL_Z)
+				);				
+
 				break;
 			}
 		}
@@ -309,14 +311,65 @@ void Character_Enemy_Normal_Walk::Initialization()
 // 更新
 void Character_Enemy_Normal_Walk::Update()
 {
-	
+    // 移動ルートが存在しない場合は何もしない
+    if (this->aMovePath.empty())
+    {
+        return;
+    }
+
+    const float MOVE_SPEED = 1.0f; // 移動速度
+    const float ARRIVAL_EPSILON = 0.1f; // これ以下なら到達とみなす
+
+    // 移動前座標から移動後座標へのベクトルを計算
+    VECTOR vecDir = VSub(this->vecNowMoveEndPosition, this->vecPosition);
+
+    // 移動前の距離を計算
+    float fDistBefore = VSize(vecDir);
+
+    // 正規化して進行方向単位ベクトルを得る
+    vecDir = VNorm(vecDir);
+
+    // 移動量をスケール
+    VECTOR vecMove = VScale(vecDir, MOVE_SPEED);
+
+    // 現在位置を更新
+    this->vecPosition = VAdd(this->vecPosition, vecMove);
+
+    // 移動後座標までの距離を再計算
+    float fDistAfter = VSize(VSub(this->vecNowMoveEndPosition, this->vecPosition));
+
+    // 到達判定：移動後距離がしきい値以下 または 移動前より距離が減らなくなった
+    if (fDistAfter <= ARRIVAL_EPSILON || fDistAfter > fDistBefore)
+    {
+        // 現在の座標を移動前座標に設定
+        this->vecNowMoveStartPosition = this->vecNowMoveEndPosition;
+
+        // インデックスを減らす
+        this->iMovePathIndex--;
+
+        // インデックスが0以下ならルート終了
+        if (this->iMovePathIndex <= 0)
+        {
+            // 終点に到達したので移動ルートをクリア
+            this->aMovePath.clear();
+            return;
+        }
+
+        // 次の移動後座標を設定
+        POSITION_3D_MAP& stNext = this->aMovePath[this->iMovePathIndex];
+        this->vecNowMoveEndPosition = VGet(
+            static_cast<float>(stNext.iX) * TILE_SIZE_PIXEL_X,
+            static_cast<float>(stNext.iY) * TILE_SIZE_PIXEL_Y,
+            static_cast<float>(stNext.iZ) * TILE_SIZE_PIXEL_Z
+        );
+    }
 }
 
 // 描写
 void Character_Enemy_Normal_Walk::Draw()
 {
     // カプセルを描写
-    DrawCapsule3D(this->vecPosition, VAdd(this->vecPosition, VGet(0, 64, 0)), 40.0f, 8, GetColor(0, 255, 0), GetColor(255, 255, 255), TRUE);
+    DrawCapsule3D(this->vecPosition, VAdd(this->vecPosition, VGet(0, 64, 0)), 16.0f, 8, GetColor(0, 255, 0), GetColor(255, 255, 255), TRUE);
 }
 
 // リセット処理
