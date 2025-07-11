@@ -88,6 +88,12 @@
     <Filter Include="ヘッダー ファイル\オブジェクト\キャラクター\エネミー%28歩行/通常%29">
       <UniqueIdentifier>{19556584-c187-4d4c-bcc4-95295e3ec465}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\シーン\ステージクリエイト">
+      <UniqueIdentifier>{45416c4c-a855-4466-bb33-4599db00ff68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\シーン\ステージクリエイト">
+      <UniqueIdentifier>{bad48070-ec80-46d0-826c-6ad6ee298889}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\AppFunctionDefine.cpp">

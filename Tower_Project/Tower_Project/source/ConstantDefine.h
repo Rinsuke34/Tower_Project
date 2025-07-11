@@ -29,3 +29,7 @@ static const int MOVE_COST_DOWN		= 1;	// 下方向の移動コスト
 static const int ASTER_ID_NONE	= 0;	// 特に何もないノード
 static const int ASTAR_ID_START	= 1;	// スタートノード
 static const int ASTAR_ID_GOAL	= 2;	// ゴールノード
+
+// オブジェクト用のID
+static const int OBJECT_ID_MAIN_BASE			= 1000;	// メインベースのID
+static const int OBJECT_ID_ENEMY_NORMAL_WALK	= 2000;	// エネミー(通常歩行)のID

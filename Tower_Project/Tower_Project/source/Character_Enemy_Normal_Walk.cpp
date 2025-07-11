@@ -93,7 +93,7 @@ void Character_Enemy_Normal_Walk::Initialization()
         {
             if (node.stPosition.iX == stCurrentPosition.iX && node.stPosition.iY == stCurrentPosition.iY && node.stPosition.iZ == stCurrentPosition.iZ)
             {
-                node.bOpen = false; // オープンリストから削除
+                node.bOpen  = false; // オープンリストから削除
                 node.bClose = true;  // クローズリストに追加
                 break;
             }
@@ -186,16 +186,16 @@ void Character_Enemy_Normal_Walk::Initialization()
 
             // 移動先座標の情報をまとめる
             ASTAR_EVALUATION_LIST stAddNode;
-            stAddNode.iId = ASTER_ID_NONE;				// 特に何もないノードとして設定
-            stAddNode.iG = iGetG + iMoveCost;            // 移動コストを加算
-            stAddNode.iH = abs(iSearchX - stGoal.iX) + abs(iSearchY - stGoal.iY) + abs(iSearchZ - stGoal.iZ); // ゴールまでのコストはマンハッタン距離で算出(Y軸は考慮しない)
-            stAddNode.iF = stAddNode.iG + stAddNode.iH;  // 総コストを計算
-            stAddNode.bOpen = true;
-            stAddNode.bClose = false;
+            stAddNode.iId           = ASTER_ID_NONE;                // 特に何もないノードとして設定
+            stAddNode.iG            = iGetG + iMoveCost;            // 移動コストを加算
+            stAddNode.iH            = abs(iSearchX - stGoal.iX) + abs(iSearchY - stGoal.iY) + abs(iSearchZ - stGoal.iZ); // ゴールまでのコストはマンハッタン距離で算出(Y軸は考慮しない)
+            stAddNode.iF            = stAddNode.iG + stAddNode.iH;  // 総コストを計算
+            stAddNode.bOpen         = true;
+            stAddNode.bClose        = false;
             stAddNode.stPosition.iX = iSearchX;						// 移動先座標を設定
             stAddNode.stPosition.iY = iSearchY;						// 移動先座標を設定
             stAddNode.stPosition.iZ = iSearchZ;						// 移動先座標を設定
-            stAddNode.stParent = stCurrentPosition;            // 親座標を現在の座標に設定
+            stAddNode.stParent      = stCurrentPosition;            // 親座標を現在の座標に設定
 
             // すでに評価値リストに同じ座標が存在するか確認
             // ※同じ座標が存在する場合は、より良い経路であれば更新する
@@ -314,7 +314,7 @@ void Character_Enemy_Normal_Walk::Update()
         return;
     }
 
-    const float MOVE_SPEED = 1.0f; // 移動速度
+    const float MOVE_SPEED      = 1.0f; // 移動速度
     const float ARRIVAL_EPSILON = 0.1f; // これ以下なら到達とみなす
 
     // 移動前座標から移動後座標へのベクトルを計算
@@ -366,7 +366,7 @@ void Character_Enemy_Normal_Walk::Update()
 void Character_Enemy_Normal_Walk::Draw()
 {
     // カプセルを描写
-    DrawCapsule3D(this->vecPosition, VAdd(this->vecPosition, VGet(0, 64, 0)), 16.0f, 8, GetColor(0, 255, 0), GetColor(255, 255, 255), TRUE);
+    DrawCapsule3D(this->vecPosition, VAdd(this->vecPosition, VGet(0, 32, 0)), 8.0f, 8, GetColor(0, 255, 0), GetColor(255, 255, 255), TRUE);
 }
 
 // リセット処理

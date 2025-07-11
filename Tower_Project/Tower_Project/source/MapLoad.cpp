@@ -26,7 +26,39 @@ void Scene_World::MapLoad()
 				/* 3次元配列の値を設定 */
                 try
                 {
-                    pDataList_Object->aiMapData[iX][iY][iZ] = json["MapData"].at(iY).at(iX).at(iZ);
+                    // 座標のIDを取得
+					int iId = json["MapData"].at(iY).at(iX).at(iZ).get<int>();
+
+                    pDataList_Object->aiMapData[iX][iY][iZ] = 0;
+
+                    // オブジェクトのIDであるか確認
+                    switch (iId)
+                    {
+                        // メインベース
+                        case OBJECT_ID_MAIN_BASE:
+                            {
+                                // メイン拠点を追加
+                                Building_MainBase* pAddBuilding = new Building_MainBase();
+                                pDataList_Object->SetBuilding(pAddBuilding);
+                                pAddBuilding->SetPosition({ iX, iY, iZ });                                
+                            }
+                            break;
+
+						// エネミー(通常歩行)
+                        case OBJECT_ID_ENEMY_NORMAL_WALK:
+                            {
+                                // エネミーを追加
+                                Character_Enemy_Normal_Walk* pAddCharacter = new Character_Enemy_Normal_Walk();
+                                pDataList_Object->SetCharacter(pAddCharacter);
+                                pAddCharacter->SetPosition({ iX, iY, iZ });
+                            }
+							break;
+
+                        // 該当しないIDの場合、足場として扱う
+                        default:
+                            pDataList_Object->aiMapData[iX][iY][iZ] = iId;
+							break;
+                    }
                 }
                 catch (const std::exception& ErrorCode)
                 {
@@ -36,16 +68,6 @@ void Scene_World::MapLoad()
             }
         }
     }
-
-    // メイン拠点を追加
-	Building_MainBase* pAddBuilding = new Building_MainBase();
-	pDataList_Object->SetBuilding(pAddBuilding);
-	pAddBuilding->SetPosition({ 32, 1, 32 });
-
-	// エネミーを追加
-	Character_Enemy_Normal_Walk* pAddCharacter = new Character_Enemy_Normal_Walk();
-	pDataList_Object->SetCharacter(pAddCharacter);
-	pAddCharacter->SetPosition({ 8, 1, 8 });
 
     // オブジェクトの初期化
 	pDataList_Object->Object_Initialization();
