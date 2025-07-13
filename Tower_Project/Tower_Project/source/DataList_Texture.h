@@ -18,8 +18,8 @@ class DataList_Texture : public DataListBase
 		void	LoadTexture();			// テクスチャ読み込み
 
 		/* グラフィックハンドル */
-		// 0:上面, 1:下面, 2:側面 
-		int		aiGrHandle_SampleBlock[3];
+		// [足場のID][0:上面, 1:下面, 2:側面]
+		int		aiGrHandle_Block[PLATFORM_ID_MAX][DIRECTION_MAX];
 
 
 	protected:

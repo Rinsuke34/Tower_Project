@@ -94,6 +94,21 @@
     <Filter Include="ヘッダー ファイル\シーン\ステージクリエイト">
       <UniqueIdentifier>{bad48070-ec80-46d0-826c-6ad6ee298889}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\シーン\ゲームメイン\足場描写">
+      <UniqueIdentifier>{3b22628b-9a05-44f6-8d37-a99014624b45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\シーン\ゲームメイン\カメラ">
+      <UniqueIdentifier>{3c2f39ea-fa07-42d7-a6ba-5d5ef8e04734}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\シーン\ゲームメイン\プレイヤー操作">
+      <UniqueIdentifier>{2d211b12-5b80-4114-8764-07be9e3168d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\オブジェクト\建造物\スポナー">
+      <UniqueIdentifier>{26bb3452-fcbf-4704-8b48-1f0b4b3a28ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\オブジェクト\建造物\スポナー">
+      <UniqueIdentifier>{e823bb6d-6be0-4cc2-a34d-5b3900bade1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\AppFunctionDefine.cpp">
@@ -132,6 +147,24 @@
     <ClCompile Include="source\Character_Enemy_Normal_Walk.cpp">
       <Filter>ソース ファイル\オブジェクト\キャラクター\エネミー%28歩行/通常%29</Filter>
     </ClCompile>
+    <ClCompile Include="source\DrawBlock.cpp">
+      <Filter>ソース ファイル\シーン\ゲームメイン\足場描写</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CameraControl.cpp">
+      <Filter>ソース ファイル\シーン\ゲームメイン\カメラ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\PlayerControl.cpp">
+      <Filter>ソース ファイル\シーン\ゲームメイン\プレイヤー操作</Filter>
+    </ClCompile>
+    <ClCompile Include="source\MapCreate.cpp">
+      <Filter>ソース ファイル\シーン\ゲームメイン\マップデータ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\MapSave.cpp">
+      <Filter>ソース ファイル\シーン\ゲームメイン\マップデータ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Building_EnemySpawner.cpp">
+      <Filter>ソース ファイル\オブジェクト\建造物\スポナー</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Scene_Title.h">
@@ -169,6 +202,9 @@
     </ClInclude>
     <ClInclude Include="source\Character_Enemy_Normal_Walk.h">
       <Filter>ヘッダー ファイル\オブジェクト\キャラクター\エネミー%28歩行/通常%29</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Building_EnemySpawner.h">
+      <Filter>ヘッダー ファイル\オブジェクト\建造物\スポナー</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

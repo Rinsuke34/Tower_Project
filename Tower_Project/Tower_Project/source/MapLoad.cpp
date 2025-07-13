@@ -40,7 +40,8 @@ void Scene_World::MapLoad()
                                 // メイン拠点を追加
                                 Building_MainBase* pAddBuilding = new Building_MainBase();
                                 pDataList_Object->SetBuilding(pAddBuilding);
-                                pAddBuilding->SetPosition({ iX, iY, iZ });                                
+                                pAddBuilding->SetPosition({ iX, iY, iZ });               
+								this->stSelectionPosition = { iX, iY, iZ }; // メインベースの位置を選択座標に設定
                             }
                             break;
 

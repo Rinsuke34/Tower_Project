@@ -32,7 +32,7 @@ void Scene_Title::Process()
 	if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_Z] == TRUE)
 	{
 		/* シーン"ワールド"をセット */
-		gpSceneServer->AddSceneReservation(new Scene_World());
+		gpSceneServer->AddSceneReservation(new Scene_World(true));
 
 		/* シーン削除フラグを有効にする */
 		this->bDeleteFlg = true;

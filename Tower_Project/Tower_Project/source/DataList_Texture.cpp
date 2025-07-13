@@ -14,9 +14,12 @@ DataList_Texture::DataList_Texture() : DataListBase("DataList_Texture")
 DataList_Texture::~DataList_Texture()
 {
 	/* グラフィックハンドルの削除 */
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < PLATFORM_ID_MAX; ++i)
 	{
-		DeleteGraph(this->aiGrHandle_SampleBlock[i]);
+		for (int j = 0; j < DIRECTION_MAX; ++j)
+		{
+			DeleteGraph(this->aiGrHandle_Block[i][j]);
+		}
 	}
 }
 
@@ -24,7 +27,18 @@ DataList_Texture::~DataList_Texture()
 void DataList_Texture::LoadTexture()
 {
 	/* ブロックのテクスチャの読み込み */
-	this->aiGrHandle_SampleBlock[DIRECTION_TOP]		= LoadGraph("resource/Texture_Block/Sample_Top.png");		// 上面
-	this->aiGrHandle_SampleBlock[DIRECTION_BOTTOM]	= LoadGraph("resource/Texture_Block/Sample_Bottom.png");	// 下面
-	this->aiGrHandle_SampleBlock[DIRECTION_SIDE]	= LoadGraph("resource/Texture_Block/Sample_Side.png");		// 側面
+	// 土(ダート)
+	this->aiGrHandle_Block[PLATFORM_ID_DIRT][DIRECTION_TOP]		= LoadGraph("resource/Texture_Block/Dirt_Top.png");
+	this->aiGrHandle_Block[PLATFORM_ID_DIRT][DIRECTION_BOTTOM]	= LoadGraph("resource/Texture_Block/Dirt_Bottom.png");
+	this->aiGrHandle_Block[PLATFORM_ID_DIRT][DIRECTION_SIDE]	= LoadGraph("resource/Texture_Block/Dirt_Side.png");
+
+	// 道路
+	this->aiGrHandle_Block[PLATFORM_ID_ROAD][DIRECTION_TOP]		= LoadGraph("resource/Texture_Block/Road_Top.png");
+	this->aiGrHandle_Block[PLATFORM_ID_ROAD][DIRECTION_BOTTOM]	= LoadGraph("resource/Texture_Block/Road_Bottom.png");
+	this->aiGrHandle_Block[PLATFORM_ID_ROAD][DIRECTION_SIDE]	= LoadGraph("resource/Texture_Block/Road_Side.png");
+
+	// 石
+	this->aiGrHandle_Block[PLATFORM_ID_STONE][DIRECTION_TOP]	= LoadGraph("resource/Texture_Block/Stone_Top.png");
+	this->aiGrHandle_Block[PLATFORM_ID_STONE][DIRECTION_BOTTOM]	= LoadGraph("resource/Texture_Block/Stone_Bottom.png");
+	this->aiGrHandle_Block[PLATFORM_ID_STONE][DIRECTION_SIDE]	= LoadGraph("resource/Texture_Block/Stone_Side.png");
 }

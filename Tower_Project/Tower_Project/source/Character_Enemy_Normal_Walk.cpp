@@ -10,13 +10,16 @@
 
 Character_Enemy_Normal_Walk::Character_Enemy_Normal_Walk() : Character_Base()  
 {
-    
+    /* 変数 */
+    this->iModelHandle = MV1LoadModel("resource/Model/Enemy/Enemy.mv1");
+
+	this->fAngle = 0.0f;    // 初期角度設定
 }
 
 // デストラクタ
 Character_Enemy_Normal_Walk::~Character_Enemy_Normal_Walk()
 {
-
+    MV1DeleteModel(this->iModelHandle);
 }
 
 // 初期化
@@ -65,9 +68,9 @@ void Character_Enemy_Normal_Walk::Initialization()
     while (true)
     {
         // 評価値リスト内のオープンリストからF値(類型コストが最小のノード)を探索
-        int     iMinF = INT_MAX;  // 最小F値
-        bool    bFoundFlg = false;    // 最小F値ノードが見つかったかのフラグ
-        int     iGetG = 0;        // 最小F値のG値(スタート地点からの総コスト)
+        int     iMinF       = INT_MAX;  // 最小F値
+        bool    bFoundFlg   = false;    // 最小F値ノードが見つかったかのフラグ
+        int     iGetG       = 0;        // 最小F値のG値(スタート地点からの総コスト)
 
         for (auto& node : stAStarEvaluationList)
         {
@@ -75,10 +78,10 @@ void Character_Enemy_Normal_Walk::Initialization()
             if (node.bOpen && node.iF < iMinF)
             {
                 // F値が最小のノードである場合
-                bFoundFlg = true;     // 最小F値ノードが見つかったフラグを立てる
-                iMinF = node.iF;  // 最小F値を更新
-                stCurrentPosition = { node.stPosition.iX, node.stPosition.iY, node.stPosition.iZ }; // 現在探索中の座標を更新
-                iGetG = node.iG;  // 最小F値のG値を更新
+                bFoundFlg           = true;     // 最小F値ノードが見つかったフラグを立てる
+                iMinF               = node.iF;  // 最小F値を更新
+                stCurrentPosition   = { node.stPosition.iX, node.stPosition.iY, node.stPosition.iZ }; // 現在探索中の座標を更新
+                iGetG               = node.iG;  // 最小F値のG値を更新
             }
         }
 
@@ -146,7 +149,7 @@ void Character_Enemy_Normal_Walk::Initialization()
                 iSearchY += 1;
 
                 // 上方向の移動コストを設定
-                iMoveCost = MOVE_COST_UP;
+                iMoveCost += MOVE_COST_UP;
             }
             else
             {
@@ -181,8 +184,15 @@ void Character_Enemy_Normal_Walk::Initialization()
                 iSearchY = iPlatformSearchY + 1;
 
                 // 下方向の移動コストを設定
-                iMoveCost = MOVE_COST_DOWN;
+                iMoveCost += MOVE_COST_DOWN;
             }
+
+			// 移動先座標の下の段の足場が"道路"以外であるか確認
+			if (aiMapData[iSearchX][iSearchY - 1][iSearchZ] != PLATFORM_ID_ROAD)
+			{
+				// "道路"以外の場合、オフロードの移動コストを加算
+				iMoveCost += MOVE_COST_OFF_LOAD;
+			}
 
             // 移動先座標の情報をまとめる
             ASTAR_EVALUATION_LIST stAddNode;
@@ -314,6 +324,9 @@ void Character_Enemy_Normal_Walk::Update()
         return;
     }
 
+    // 移動前座標を保存
+	VECTOR vecOldPosition = this->vecPosition;
+
     const float MOVE_SPEED      = 1.0f; // 移動速度
     const float ARRIVAL_EPSILON = 0.1f; // これ以下なら到達とみなす
 
@@ -360,13 +373,24 @@ void Character_Enemy_Normal_Walk::Update()
             static_cast<float>(stNext.iZ) * TILE_SIZE_PIXEL_Z
         );
     }
+
+	// 移動前座標と移動後座標から角度を計算
+	float fDirectionX = this->vecPosition.x - vecOldPosition.x;
+	float fDirectionZ = this->vecPosition.z - vecOldPosition.z;
+	this->fAngle = atan2f(fDirectionZ, fDirectionX);
 }
 
 // 描写
 void Character_Enemy_Normal_Walk::Draw()
 {
-    // カプセルを描写
-    DrawCapsule3D(this->vecPosition, VAdd(this->vecPosition, VGet(0, 32, 0)), 8.0f, 8, GetColor(0, 255, 0), GetColor(255, 255, 255), TRUE);
+    // モデルの位置を設定
+    MV1SetPosition(this->iModelHandle, this->vecPosition);
+
+	// モデルの回転を設定
+	MV1SetRotationXYZ(this->iModelHandle, VGet(0.0f, this->fAngle, 0.0f));
+
+    // モデルの描写
+    MV1DrawModel(this->iModelHandle);
 }
 
 // リセット処理

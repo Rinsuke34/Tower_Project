@@ -10,7 +10,7 @@
 // コンストラクタ
 Building_MainBase::Building_MainBase() : Building_Base()
 {
-	this->iModelHandle = MV1LoadModel("resource/test/flag.mv1");
+	this->iModelHandle = MV1LoadModel("resource/Model/Base/Base.mv1");
 }
 
 // デストラクタ
