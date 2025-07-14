@@ -381,8 +381,8 @@ void Character_Enemy_Normal_Walk::Update()
     }
 
 	// ˆÚ“®‘OÀ•W‚ÆˆÚ“®ŒãÀ•W‚©‚çŠp“x‚ðŒvŽZ
-	float fDirectionX = this->vecPosition.x - vecOldPosition.x;
-	float fDirectionZ = this->vecPosition.z - vecOldPosition.z;
+	float fDirectionX = vecOldPosition.x - this->vecPosition.x;
+	float fDirectionZ = vecOldPosition.z - this->vecPosition.z;
 	this->fAngle = atan2f(fDirectionZ, fDirectionX);
 }
 
@@ -393,7 +393,7 @@ void Character_Enemy_Normal_Walk::Draw()
     MV1SetPosition(this->iModelHandle, this->vecPosition);
 
 	// ƒ‚ƒfƒ‹‚Ì‰ñ“]‚ðÝ’è
-	MV1SetRotationXYZ(this->iModelHandle, VGet(0.0f, this->fAngle, 0.0f));
+	MV1SetRotationXYZ(this->iModelHandle, VGet(0.0f, -this->fAngle, 0.0f));
 
     // ƒ‚ƒfƒ‹‚Ì•`ŽÊ
     MV1DrawModel(this->iModelHandle);
