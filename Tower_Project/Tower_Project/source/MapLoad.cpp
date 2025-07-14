@@ -3,6 +3,7 @@
 #include "Scene_World.h"
 
 #include "Building_MainBase.h"
+#include "Building_EnemySpawner.h"
 #include "Character_Enemy_Normal_Walk.h"
 
 /* シーン"ゲームメイン"のマップロード部分の定義 */
@@ -45,12 +46,22 @@ void Scene_World::MapLoad()
                             }
                             break;
 
+                        // エネミースポナー
+                        case OBJECT_ID_ENEMY_SPAWNER:
+                            {
+                                // エネミースポナーを追加
+                                Building_EnemySpawner* pAddBuilding = new Building_EnemySpawner();
+                                this->pDataList_Object->SetBuilding(pAddBuilding);
+                                pAddBuilding->SetPosition({ iX, iY, iZ });
+                            }
+    					    break;
+
 						// エネミー(通常歩行)
                         case OBJECT_ID_ENEMY_NORMAL_WALK:
                             {
                                 // エネミーを追加
                                 Character_Enemy_Normal_Walk* pAddCharacter = new Character_Enemy_Normal_Walk();
-                                pDataList_Object->SetCharacter(pAddCharacter);
+                                this->pDataList_Object->SetCharacter(pAddCharacter);
                                 pAddCharacter->SetPosition({ iX, iY, iZ });
                             }
 							break;

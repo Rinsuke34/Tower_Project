@@ -35,7 +35,11 @@ static const int ASTAR_ID_GOAL	= 2;	// ゴールノード
 
 // オブジェクト用のID
 static const int OBJECT_ID_MAIN_BASE			= 1000;	// メインベースのID
-static const int OBJECT_ID_ENEMY_NORMAL_WALK	= 2000;	// エネミー(通常歩行)のID
+static const int OBJECT_ID_ENEMY_SPAWNER		= 1001;	// エネミースポナー
+static const int OBJECT_ID_ENEMY_NORMAL_WALK	= 1002;	// エネミー(通常歩行)のID
+
+static const int OBJECT_ID_MINIMUM_VALUE		= 1000;	// オブジェクトの最小ID
+static const int OBJECT_ID_MAX					= 1003;	// オブジェクトの最大ID
 
 // カメラモード
 static const int CAMERA_MODE_TOP_VIEW	= 0;	// トップビューカメラ
@@ -47,4 +51,5 @@ static const int PLATFORM_ID_DIRT		= 1;	// 土
 static const int PLATFORM_ID_ROAD		= 2;	// 道路
 static const int PLATFORM_ID_STONE		= 3;	// 石
 
-static const int PLATFORM_ID_MAX		= 4;	// 足場の最大ID
+static const int PLATFORM_ID_MINIMUM_VALUE	= 1;	// 足場の最小ID
+static const int PLATFORM_ID_MAX			= 4;	// 足場の最大ID

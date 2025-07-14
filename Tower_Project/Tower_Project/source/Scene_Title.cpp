@@ -32,8 +32,15 @@ void Scene_Title::Process()
 	if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_Z] == TRUE)
 	{
 		/* シーン"ワールド"をセット */
-		gpSceneServer->AddSceneReservation(new Scene_World(true));
+		gpSceneServer->AddSceneReservation(new Scene_World(false));
 
+		/* シーン削除フラグを有効にする */
+		this->bDeleteFlg = true;
+	}
+	else if (gstKeyboardInputData.cgInput[INPUT_HOLD][KEY_INPUT_X] == TRUE)
+	{
+		/* シーン"ワールド"をセット */
+		gpSceneServer->AddSceneReservation(new Scene_World(true));
 		/* シーン削除フラグを有効にする */
 		this->bDeleteFlg = true;
 	}
@@ -44,5 +51,6 @@ void Scene_Title::Draw()
 {
 	/* タイトル画面描写 */
 	DrawString(SCREEN_SIZE_WIDE / 2, SCREEN_SIZE_HEIGHT / 2, "タイトル", GetColor(255, 255, 255));
+	DrawString(SCREEN_SIZE_WIDE / 2, SCREEN_SIZE_HEIGHT / 2 - 20, "Z:開始, X:編集モード", GetColor(255, 255, 255));
 }
 

@@ -9,8 +9,11 @@ Scene_World::Scene_World(bool bMapCreateMode) : SceneBase("Scene_World", 0, fals
 	// 引数
 	// bMapCreateMode: マップ作成モードフラグ
 
-	// マップ作成モードフラグ設定
-	this->bMapCreateMode = bMapCreateMode;
+	// マップ作成モード関連のフラグ設定
+	this->bMapCreateMode	= bMapCreateMode;
+	this->bAddBuildingMode	= false;
+	this->iAddBlockId		= PLATFORM_ID_MINIMUM_VALUE;
+	this->iAddBuildingId	= OBJECT_ID_MINIMUM_VALUE;
 
 	// 初期化処理
 	Initialization();

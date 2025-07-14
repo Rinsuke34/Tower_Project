@@ -50,7 +50,9 @@ class Scene_World : public SceneBase
 		int		iCameraMode;					// カメラモード（0:トップビュー, 1:FPSカメラ）
 
 		bool	bMapCreateMode;					// マップ作成モードフラグ
+		bool	bAddBuildingMode;				// 建造物追加モードフラグ(有効なら地形編集の代わりに建造物を追加)
 		int		iAddBlockId;					// 追加するブロックのID
+		int		iAddBuildingId;					// 追加する建造物のID
 
 		POSITION_3D_MAP	stSelectionPosition;	// 選択中の座標
 };

@@ -4,7 +4,8 @@
 
 /* すべてのキャラクターのベースとなるクラスの定義 */
 // コンストラクタ
-Character_Base::Character_Base() : Object_Base()
+Character_Base::Character_Base(int iId) : Object_Base()
 {
-
+	// IDを設定
+	this->iId = iId;
 }

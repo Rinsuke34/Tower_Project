@@ -23,7 +23,14 @@ void Scene_World::MapSave()
 	for (const auto& object : pDataList_Object->aMapBuildingData)
 	{
         // オブジェクトのIDを座標に上書き
-		aiSaveMapData[object.second.stPosition.iX][object.second.stPosition.iY][object.second.stPosition.iZ] = object.first;
+		aiSaveMapData[object.stPosition.iX][object.stPosition.iY][object.stPosition.iZ] = object.iId;
+	}
+
+	// エネミーの座標をマップデータに上書きする
+	for (const auto& character : pDataList_Object->paCharacterList)
+	{
+		// エネミーのIDを座標に上書き
+		aiSaveMapData[character->GetPosition().iX][character->GetPosition().iY][character->GetPosition().iZ] = character->iGetId();
 	}
 
     /* 保存先のパス指定 */

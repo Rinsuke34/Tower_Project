@@ -8,7 +8,7 @@
 #include "StructDefine.h"
 #include "ConstantDefine.h"
 
-Character_Enemy_Normal_Walk::Character_Enemy_Normal_Walk() : Character_Base()  
+Character_Enemy_Normal_Walk::Character_Enemy_Normal_Walk() : Character_Base(OBJECT_ID_ENEMY_NORMAL_WALK)
 {
     /* 変数 */
     this->iModelHandle = MV1LoadModel("resource/Model/Enemy/Enemy.mv1");
@@ -36,14 +36,20 @@ void Character_Enemy_Normal_Walk::Initialization()
     POSITION_3D_MAP stStart = this->stMapPosition;
 
     // ゴール（拠点）の座標を取得
-    DataList_Object* pObj = static_cast<DataList_Object*>(gpDataListServer->GetDataList("DataList_Object"));
-    if (!pObj) return;
-    auto it = pObj->aMapBuildingData.find(1000);
-    if (it == pObj->aMapBuildingData.end()) return;
-    POSITION_3D_MAP stGoal = it->second.stPosition;
+	POSITION_3D_MAP stGoal = { 0, 0, 0 };   // ゴール座標
+    DataList_Object* pObjectList = static_cast<DataList_Object*>(gpDataListServer->GetDataList("DataList_Object"));
+    for (auto& Building : pObjectList->aMapBuildingData)
+    {
+        if (Building.iId == OBJECT_ID_MAIN_BASE)
+        {
+			// メインベースの座標を保存
+            stGoal = Building.stPosition;
+			break;
+        }
+    }
 
     // マップデータ(足場)(3次元配列)の取得
-    auto& aiMapData = pObj->aiMapData;
+    auto& aiMapData = pObjectList->aiMapData;
 
     // 評価値リストを作成
     std::vector<ASTAR_EVALUATION_LIST> stAStarEvaluationList;
