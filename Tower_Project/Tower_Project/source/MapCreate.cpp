@@ -49,6 +49,22 @@ void Scene_World::MapCreate()
 					// 該当オブジェクトを削除
 					delete* it; // オブジェクトのメモリ解放
 					it = this->pDataList_Object->paBuildingList.erase(it);
+
+					// マップデータからも削除
+					auto& MapBuilding = this->pDataList_Object->aMapBuildingData;
+					for (auto building = MapBuilding.begin(); building != MapBuilding.end(); )
+					{
+						if (building->stPosition.iX == this->stSelectionPosition.iX &&
+							building->stPosition.iZ == this->stSelectionPosition.iZ)
+						{
+							// 要素を削除し、戻り値で次の有効なイテレータを取得
+							building = MapBuilding.erase(building);
+						}
+						else
+						{
+							++building;
+						}
+					}
 				}
 				else
 				{
