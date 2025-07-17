@@ -2,6 +2,8 @@
 
 #include "Scene_World.h"
 
+#include "Scene_GameOver.h"
+
 /* シーン"ゲームメイン"の定義 */
 // コンストラクタ
 Scene_World::Scene_World(bool bMapCreateMode) : SceneBase("Scene_World", 0, false)
@@ -14,6 +16,10 @@ Scene_World::Scene_World(bool bMapCreateMode) : SceneBase("Scene_World", 0, fals
 	this->bAddBuildingMode	= false;
 	this->iAddBlockId		= PLATFORM_ID_MINIMUM_VALUE;
 	this->iAddBuildingId	= OBJECT_ID_MINIMUM_VALUE;
+
+	this->iHaveCost			= 0;					// 所持コスト
+	this->iAddCostInterval	= ADD_COST_INTERVAL;	// コスト追加間隔(フレーム数)
+	this->iScore			= 0;					// スコア(生存時間)
 
 	// 初期化処理
 	Initialization();
@@ -63,8 +69,28 @@ void Scene_World::Process()
 		return;
 	}
 
+	/* 建造物作成処理 */
+	CreateBuilding();
+
 	/* オブジェクトの更新処理 */
 	this->pDataList_Object->Object_Update();
+
+	/* オブジェクトの削除処理 */
+	this->pDataList_Object->Object_Delete();
+
+	/* スコア更新 */
+	this->iScore++;
+
+	/* メインベースが破壊されたか確認 */
+	if (this->pDataList_Object->bMainBaseBleakFlg)
+	{
+		/* シーン"ゲームオーバー"をセット */
+		gpSceneServer->AddSceneReservation(new Scene_GameOver(this->iScore));
+
+		/* シーン削除フラグを有効化する */
+		this->bDeleteFlg = true;
+		return;
+	}
 }
 
 // 描画
@@ -94,7 +120,11 @@ void Scene_World::Draw()
 	{
 		/* マップ作成オプションの描写 */
 		DrawMapCreate();
-		return;
+	}
+	else
+	{
+		/* 状態の描写 */
+		DrawStatus();
 	}
 }
 

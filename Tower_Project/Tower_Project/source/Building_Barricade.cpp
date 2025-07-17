@@ -1,22 +1,21 @@
-/* 2025.07.01 駒沢風助 ファイル作成 */
-
-#include "Building_MainBase.h"
+/* 2025.07.17 駒沢風助 ファイル作成 */
 
 #include "ConstantDefine.h"
-
 #include "DataList_Object.h"
+#include "Building_Barricade.h"
 
-/* メイン拠点クラスの定義 */
+/* バリケードクラスの定義 */
 // コンストラクタ
-Building_MainBase::Building_MainBase() : Building_Base(OBJECT_FACTION_PLAYER)
+Building_Barricade::Building_Barricade() : Building_Base(OBJECT_FACTION_PLAYER)
 {
-	this->iModelHandle	= MV1LoadModel("resource/Model/Base/Base.mv1");
-	this->iMaxHp		= OBJECT_HP_MAX_MAIN_BASE;	// メインベースの最大体力を設定
-	this->iNowHp		= this->iMaxHp;		// メインベースの初期体力を設定
+	/* 変数 */
+	this->iModelHandle	= MV1LoadModel("resource/Model/Barricade/Barricade.mv1");
+	this->iMaxHp		= OBJECT_HP_MAX_BARRICADE;	// バリケードの最大体力を設定
+	this->iNowHp		= this->iMaxHp;				// バリケードの初期体力を設定
 }
 
 // デストラクタ
-Building_MainBase::~Building_MainBase()
+Building_Barricade::~Building_Barricade()
 {
 	MV1DeleteModel(this->iModelHandle);
 
@@ -28,7 +27,7 @@ Building_MainBase::~Building_MainBase()
 }
 
 // 初期化
-void Building_MainBase::Initialization()
+void Building_Barricade::Initialization()
 {
 	// マップ上の座標から実際の座標を設定
 	this->vecPosition.x = this->stMapPosition.iX * TILE_SIZE_PIXEL_X;							// X座標を設定
@@ -36,24 +35,23 @@ void Building_MainBase::Initialization()
 	this->vecPosition.z = this->stMapPosition.iZ * TILE_SIZE_PIXEL_Z;							// Z座標を設定
 
 	// データリスト上にこのオブジェクトの情報を設定
-	MAP_DATA stMapData = { this->stMapPosition.iX, this->stMapPosition.iY, this->stMapPosition.iZ, OBJECT_ID_MAIN_BASE };
+	MAP_DATA stMapData = { this->stMapPosition.iX, this->stMapPosition.iY, this->stMapPosition.iZ, OBJECT_ID_BARRICADE };
 	static_cast<DataList_Object*>(gpDataListServer->GetDataList("DataList_Object"))->aMapBuildingData.push_back(stMapData);
 }
 
 // 更新
-void Building_MainBase::Update()
+void Building_Barricade::Update()
 {
-	// 体力が0以下ならゲームオーバーとする
+	// 体力が0以下なら削除フラグを立てる
 	if (this->iNowHp <= 0)
 	{
-		// メイン拠点破壊フラグを建てる
-		static_cast<DataList_Object*>(gpDataListServer->GetDataList("DataList_Object"))->bMainBaseBleakFlg = true;
+		this->bDeleteFlg = true;
 		return;
 	}
 }
 
 // 描写
-void Building_MainBase::Draw()
+void Building_Barricade::Draw()
 {
 	// モデルの位置を設定
 	MV1SetPosition(this->iModelHandle, this->vecPosition);

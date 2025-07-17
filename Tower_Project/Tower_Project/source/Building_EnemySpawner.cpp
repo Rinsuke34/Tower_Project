@@ -1,18 +1,18 @@
 /* 2025.07.13 駒沢風助 ファイル作成 */
 
 #include "Building_EnemySpawner.h"
-
 #include "ConstantDefine.h"
-
 #include "DataList_Object.h"
+#include "Character_Enemy_Normal_Walk.h"
+#include "Character_Enemy_HightSpeed_Walk.h"
 
 /* エネミースポナークラスの定義 */
 // コンストラクタ
-Building_EnemySpawner::Building_EnemySpawner() : Building_Base()
+Building_EnemySpawner::Building_EnemySpawner() : Building_Base(OBJECT_FACTION_ENEMY)
 {
 	/* 変数 */
-	this->iModelHandle	= MV1LoadModel("resource/Model/Spawner/Spawner.mv1");
-	this->SpawnFlag		= false;
+	this->iModelHandle		= MV1LoadModel("resource/Model/Spawner/Spawner.mv1");
+	this->iSpawnInterval	= ENEMY_SPAWN_INTERVAL;
 }
 
 // デストラクタ
@@ -37,14 +37,34 @@ void Building_EnemySpawner::Initialization()
 // 更新
 void Building_EnemySpawner::Update()
 {
-	// スポーンフラグが立っている場合、エネミーをスポーンする処理を実行
-	if (this->SpawnFlag)
+	// スポーンのインターバルが完了しているなら再度設定する
+	if (this->iSpawnInterval <= 0)
 	{
-		// エネミーをスポーンする処理をここに記述
-		// 例: gpDataListServer->SpawnEnemy(this->stPosition);
+		// エネミーを追加
+		Character_Base* pAddCharacter;
+		// 1/4で高速、3/4で通常歩行のエネミーをスポーンする
+		if ((rand() % 4) == 0)
+		{
+			pAddCharacter = new Character_Enemy_HightSpeed_Walk();
+		}
+		else
+		{
+			pAddCharacter = new Character_Enemy_Normal_Walk();
+		}
+		DataList_Object* pDataList_Object = static_cast<DataList_Object*>(gpDataListServer->GetDataList("DataList_Object"));
+		pDataList_Object->SetCharacter(pAddCharacter);
+		pAddCharacter->SetPosition(this->stMapPosition);
 
-		// スポーン後、フラグを下ろす
-		this->SpawnFlag = false;
+		// 追加したエネミーの初期化を行う
+		pAddCharacter->Initialization();
+
+		// スポーンまでのインターバルを設定する
+		this->iSpawnInterval = ENEMY_SPAWN_INTERVAL;
+	}
+	else
+	{
+		// スポーンまでのインターバルを減らす
+		this->iSpawnInterval--;
 	}
 }
 

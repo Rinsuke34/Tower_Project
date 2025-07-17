@@ -20,11 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\AppFunctionDefine.cpp" />
+    <ClCompile Include="source\Building_Barricade.cpp" />
     <ClCompile Include="source\Building_Base.cpp" />
     <ClCompile Include="source\Building_EnemySpawner.cpp" />
     <ClCompile Include="source\Building_MainBase.cpp" />
+    <ClCompile Include="source\Building_Turret.cpp" />
     <ClCompile Include="source\CameraControl.cpp" />
     <ClCompile Include="source\Character_Base.cpp" />
+    <ClCompile Include="source\Character_Enemy_HightSpeed_Walk.cpp" />
     <ClCompile Include="source\Character_Enemy_Normal_Walk.cpp" />
     <ClCompile Include="source\DataList_Object.cpp" />
     <ClCompile Include="source\DataList_Texture.cpp" />
@@ -34,19 +37,24 @@
     <ClCompile Include="source\MapSave.cpp" />
     <ClCompile Include="source\Object_Base.cpp" />
     <ClCompile Include="source\PlayerControl.cpp" />
+    <ClCompile Include="source\Scene_GameOver.cpp" />
     <ClCompile Include="source\Scene_Title.cpp" />
     <ClCompile Include="source\Scene_World.cpp" />
     <ClCompile Include="source\VariableDefine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Building_Barricade.h" />
     <ClInclude Include="source\Building_Base.h" />
     <ClInclude Include="source\Building_EnemySpawner.h" />
     <ClInclude Include="source\Building_MainBase.h" />
+    <ClInclude Include="source\Building_Turret.h" />
     <ClInclude Include="source\Character_Base.h" />
+    <ClInclude Include="source\Character_Enemy_HightSpeed_Walk.h" />
     <ClInclude Include="source\Character_Enemy_Normal_Walk.h" />
     <ClInclude Include="source\DataList_Object.h" />
     <ClInclude Include="source\DataList_Texture.h" />
     <ClInclude Include="source\Object_Base.h" />
+    <ClInclude Include="source\Scene_GameOver.h" />
     <ClInclude Include="source\Scene_Title.h" />
     <ClInclude Include="source\Scene_World.h" />
     <ClInclude Include="source\StructDefine.h" />

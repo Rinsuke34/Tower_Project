@@ -35,6 +35,8 @@ class Scene_World : public SceneBase
 		void	CameraControl();	// カメラ制御
 		void	DrawBlock();		// 足場描写
 		void	SelectPosition();	// 選択座標変更処理
+		void	CreateBuilding();	// 建築物作成
+		void	DrawStatus();		// 状態の描写
 
 		void	Cmaera_TopView();	// トップビューカメラ
 		void	Camera_FPS();		// FPSカメラ
@@ -55,4 +57,9 @@ class Scene_World : public SceneBase
 		int		iAddBuildingId;					// 追加する建造物のID
 
 		POSITION_3D_MAP	stSelectionPosition;	// 選択中の座標
+
+		/* 変数 */
+		int		iHaveCost;					// 所持コスト
+		int		iAddCostInterval;			// コスト追加間隔(フレーム数)
+		int		iScore;						// スコア(生存時間)
 };

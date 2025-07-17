@@ -9,6 +9,8 @@ DataList_Object::DataList_Object() : DataListBase("DataList_Object")
 	/* 初期化 */
 	this->paBuildingList.clear();	// 建造物リスト初期化
 	this->paCharacterList.clear();	// キャラクターリスト初期化
+
+	this->bMainBaseBleakFlg = false;	// メイン拠点破壊フラグ初期化
 }
 
 // デストラクタ

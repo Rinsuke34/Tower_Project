@@ -30,12 +30,11 @@ class DataList_Object : public DataListBase
 		void	SetBuilding(Building_Base* pBuilding)		{	this->paBuildingList.push_back(pBuilding);		};	// 建造物追加
 
 		/* リスト */
-		std::vector<Character_Base*>	paCharacterList;		// キャラクターリスト
+		std::vector<Character_Base*>	paCharacterList;		// キャラクター(エネミー)リスト
 		std::vector<Building_Base*>		paBuildingList;			// 建造物リスト
 
 		/* マップ情報 */
 		int							aiMapData[MAP_SIZE_X][MAP_SIZE_Y][MAP_SIZE_Z];	// マップデータ(足場)(3次元配列)
 		std::vector<MAP_DATA>		aMapBuildingData;								// マップデータ(建造物)(ID/情報)
-
-	protected:
+		bool						bMainBaseBleakFlg;								// メイン拠点破壊フラグ
 };
