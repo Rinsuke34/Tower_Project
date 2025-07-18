@@ -229,7 +229,7 @@ void Scene_World::DrawMapCreate()
 		// 建築物追加モードの場合
 		// 建築物追加関連の描写を行う
 		DrawFormatString(10, 480, GetColor(255, 255, 255), "建造物追加モード");
-		DrawFormatString(10, 500, GetColor(255, 255, 255), "WS:追加する建造物のID変更, Z:建造物追加, X:建造物削除, C:地形編集追加モードに切り替え, Enter:マップ保存, Esc:タイトルへ戻る");
+		DrawFormatString(10, 500, GetColor(255, 255, 255), "WS:追加する建造物のID変更, Z:建造物追加, X:建造物削除, C:地形編集追加モードに切り替え, Enter:マップ保存, Esc:タイトルへ戻る, Q:カメラモード切り替え");
 		DrawFormatString(10, 520, GetColor(255, 255, 255), "追加する建造物のID: %d", this->iAddBuildingId);
 		DrawFormatString(10, 540, GetColor(255, 255, 255), "1000:メインベース, 1001:エネミースポナー, 1002:エネミー(通常歩行)");
 	}
@@ -238,7 +238,7 @@ void Scene_World::DrawMapCreate()
 		// 建築物追加モードでない場合
 		// 地形編集関連の描写を行う
 		DrawFormatString(10, 480, GetColor(255, 255, 255), "地形編集モード");
-		DrawFormatString(10, 500, GetColor(255, 255, 255), "WS:追加するブロックのID変更, Z:ブロック追加, X:ブロック削除, C:建造物追加モードに切り替え, Enter:マップ保存, Esc:タイトルへ戻る");
+		DrawFormatString(10, 500, GetColor(255, 255, 255), "WS:追加するブロックのID変更, Z:ブロック追加, X:ブロック削除, C:建造物追加モードに切り替え, Enter:マップ保存, Esc:タイトルへ戻る, Q:カメラモード切り替え");
 		DrawFormatString(10, 520, GetColor(255, 255, 255), "追加するブロックのID: %d", this->iAddBlockId);
 		DrawFormatString(10, 540, GetColor(255, 255, 255), "1:土, 2:道, 3:石");
 	}

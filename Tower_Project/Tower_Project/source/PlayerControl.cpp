@@ -31,6 +31,22 @@ void Scene_World::SelectPosition()
 	{
 		this->stSelectionPosition.iZ -= 1;
 	}
+
+	// カメラモード切り替え(Qキー)
+	if (gstKeyboardInputData.cgInput[INPUT_TRG][KEY_INPUT_Q])
+	{
+		// カメラモードを切り替える
+		if (this->iCameraMode == CAMERA_MODE_FPS)
+		{
+			// トップビューに切り替え
+			this->iCameraMode = CAMERA_MODE_TOP_VIEW;
+		}
+		else
+		{
+			// FPSカメラに切り替え
+			this->iCameraMode = CAMERA_MODE_FPS;
+		}
+	}
 }
 
 // 建築物作成
@@ -105,4 +121,5 @@ void Scene_World::DrawStatus()
 	DrawFormatString(10, 480, GetColor(255, 255, 255), "スコア: %d", this->iScore);
 	DrawFormatString(10, 500, GetColor(255, 255, 255), "現在の所持コスト: %d", this->iHaveCost);
 	DrawFormatString(10, 520, GetColor(255, 255, 255), "Z:バリケード設置, X:タレット設置");
+	DrawFormatString(10, 540, GetColor(255, 255, 255), "カメラモード切り替え");
 }

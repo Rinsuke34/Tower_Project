@@ -96,10 +96,4 @@ void Scene_World::Camera_FPS()
 	this->vecCameraTargetPos.x = fScale * cosf(this->fCameraAngleY) * -sinf(this->fCameraAngleX) + this->vecCameraPos.x;
 	this->vecCameraTargetPos.y = fScale * sinf(this->fCameraAngleY) + this->vecCameraPos.y;
 	this->vecCameraTargetPos.z = fScale * cosf(this->fCameraAngleY) * cosf(this->fCameraAngleX) + this->vecCameraPos.z;
-
-	/* 選択中の座標を取得 */
-	// カメラ注視点がどのブロックに当たっているかを計算
-	this->stSelectionPosition.iX = static_cast<int>((this->vecCameraTargetPos.x + this->vecCameraPos.x) / TILE_SIZE_PIXEL_X);
-	this->stSelectionPosition.iY = static_cast<int>((this->vecCameraTargetPos.y + this->vecCameraPos.y) / TILE_SIZE_PIXEL_Y);
-	this->stSelectionPosition.iZ = static_cast<int>((this->vecCameraTargetPos.z + this->vecCameraPos.z) / TILE_SIZE_PIXEL_Z);
 }
