@@ -48,7 +48,7 @@ void Character_Base::RouteSearch()
     ASTAR_EVALUATION_LIST stAddStart;
     stAddStart.iId = ASTAR_ID_START;	// スタートノードに設定
     stAddStart.iG = 0;
-    stAddStart.iH = abs(stStart.iX - stGoal.iX) + abs(stStart.iZ - stGoal.iZ);  // ゴールまでのコストはマンハッタン距離で算出(Y軸は考慮しない)
+    stAddStart.iH = abs(stStart.iX - stGoal.iX) + abs(stStart.iY - stGoal.iY) + abs(stStart.iZ - stGoal.iZ);  // ゴールまでのコストはマンハッタン距離で算出
     stAddStart.iF = stAddStart.iG + stAddStart.iH;
     stAddStart.bOpen = true;
     stAddStart.bClose = false;
@@ -194,7 +194,7 @@ void Character_Base::RouteSearch()
             ASTAR_EVALUATION_LIST stAddNode;
             stAddNode.iId           = ASTER_ID_NONE;                // 特に何もないノードとして設定
             stAddNode.iG            = iGetG + iMoveCost;            // 移動コストを加算
-            stAddNode.iH            = abs(iSearchX - stGoal.iX) + abs(iSearchZ - stGoal.iZ); // ゴールまでのコストはマンハッタン距離で算出
+            stAddNode.iH            = abs(iSearchX - stGoal.iX) + abs(iSearchY - stGoal.iY) + abs(iSearchZ - stGoal.iZ); // ゴールまでのコストはマンハッタン距離で算出
             stAddNode.iF            = stAddNode.iG + stAddNode.iH;  // 総コストを計算
             stAddNode.bOpen         = true;
             stAddNode.bClose        = false;
@@ -221,7 +221,7 @@ void Character_Base::RouteSearch()
             if (bAddNodeFlg)
             {
                 // ゴールに到達した場合、探索成功とする
-                if (stCurrentPosition.iX == stGoal.iX && stCurrentPosition.iZ == stGoal.iZ)
+                if (stCurrentPosition.iX == stGoal.iX && stCurrentPosition.iY == stGoal.iY && stCurrentPosition.iZ == stGoal.iZ)
                 {
                     bGoalFoundFlg = true;
                     stAddNode.iId = ASTAR_ID_GOAL; // ゴールノードに設定
