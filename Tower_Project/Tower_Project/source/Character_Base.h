@@ -19,7 +19,7 @@ class Character_Base : public Object_Base
 		POSITION_3D_MAP GetPosition()	{ return this->stMapPosition; };	// 座標を取得
 		int				iGetId()		{ return this->iId; };				// IDを取得
 
-		void			RouteSearch();		// ルート探索処理
+		void			RouteSearch();			// ルート探索処理
 
 	protected:
 		/* 変数 */

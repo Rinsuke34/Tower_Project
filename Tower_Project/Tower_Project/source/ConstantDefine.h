@@ -61,8 +61,8 @@ static const int PLATFORM_ID_MINIMUM_VALUE	= 1;	// 足場の最小ID
 static const int PLATFORM_ID_MAX			= 4;	// 足場の最大ID
 
 // エネミー関連
-static const int ENEMY_SPAWN_INTERVAL_SHORTETED	= 60 * 15;	// エネミースポーンの最短時間(フレーム単位)
-static const int ENEMY_SPAWN_INTERVAL_RANDOM	= 60 * 30;	// エネミースポーンのランダム時間(フレーム単位)
+static const int ENEMY_SPAWN_INTERVAL_SHORTETED	= 60 * 10;	// エネミースポーンの最短時間(フレーム単位)
+static const int ENEMY_SPAWN_INTERVAL_RANDOM	= 60 * 20;	// エネミースポーンのランダム時間(フレーム単位)
 
 #define ENEMY_SPAWN_INTERVAL (ENEMY_SPAWN_INTERVAL_SHORTETED + (rand() % ENEMY_SPAWN_INTERVAL_RANDOM))	// エネミースポーンのインターバルのマクロ(フレーム単位)
 
@@ -76,8 +76,8 @@ static const int OBJECT_HP_MAX_MAIN_BASE			= 50;	// メイン拠点の最大体力
 static const int OBJECT_HP_MAX_BARRICADE			= 20;	// バリケードの最大体力
 static const int OBJECT_HP_MAX_TURRET				= 5;	// タレットの最大体力
 
-static const int OBJECT_ATTACK_RANGE_TURRET			= 64 * 3;	// タレットの攻撃範囲(ピクセル単位)
+static const int OBJECT_ATTACK_RANGE_TURRET			= 64 * 4;	// タレットの攻撃範囲(ピクセル単位)
 static const int OBJECT_ATTACK_INTERVAL_TURRET		= 60;		// タレットの攻撃間隔(フレーム単位)
 static const int OBJECT_ATTACK_DAMAGE_TURRET		= 1;		// タレットの攻撃ダメージ
 
-static const int ADD_COST_INTERVAL = 60 * 3;	// コスト追加の間隔(フレーム単位)
+static const int ADD_COST_INTERVAL = 60 * 5;	// コスト追加の間隔(フレーム単位)
