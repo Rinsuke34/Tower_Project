@@ -10,4 +10,5 @@ Building_Base::Building_Base(int iFactionNo) : Object_Base()
 	this->iNowHp		= 0;			// 残り体力を初期化
 	this->stMapPosition	= { 0, 0, 0 };	// 座標を初期化
 	this->iFactionNo	= iFactionNo;	// 陣営番号を設定
+	this->iModelHandle	= -1;			// モデルハンドルを初期化
 }

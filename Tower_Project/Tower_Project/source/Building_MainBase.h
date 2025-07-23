@@ -15,8 +15,4 @@ class Building_MainBase : public Building_Base
 		virtual void	Initialization()	override;	// 初期化
 		virtual void	Update()			override;	// 更新
 		virtual void	Draw()				override;	// 描写
-
-	private:
-		/* 変数 */
-		int	iModelHandle;	// モデルハンドル
 };

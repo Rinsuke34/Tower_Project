@@ -18,6 +18,5 @@ class Building_Turret : public Building_Base
 
 	private:
 		/* 変数 */
-		int		iModelHandle;		// モデルハンドル
 		int		iAttackInterval;	// 攻撃間隔(フレーム数)
 };

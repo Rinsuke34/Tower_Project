@@ -18,12 +18,6 @@ namespace SCENE_SET
 		/* シーン"タイトル"をセット */
 		gpSceneServer->AddSceneReservation(new Scene_Title());
 	}
-
-	// ロードシーンをセット
-	void	SetLoadScene()
-	{
-
-	}
 }
 
 // 初期化

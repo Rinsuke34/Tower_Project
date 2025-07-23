@@ -18,6 +18,5 @@ class Building_EnemySpawner : public Building_Base
 
 	private:
 		/* 変数 */
-		int		iModelHandle;	// モデルハンドル
 		int		iSpawnInterval;	// スポーンまでのインターバル
 };

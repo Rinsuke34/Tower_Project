@@ -13,18 +13,6 @@ Scene_Title::Scene_Title() : SceneBase("Scene_Title", 0, false)
 	Initialization();
 }
 
-// デストラクタ
-Scene_Title::~Scene_Title()
-{
-
-}
-
-// 初期化
-void Scene_Title::Initialization()
-{
-
-}
-
 // 計算
 void Scene_Title::Process()
 {

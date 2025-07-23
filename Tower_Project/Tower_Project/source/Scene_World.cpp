@@ -96,7 +96,7 @@ void Scene_World::Process()
 // 描画
 void Scene_World::Draw()
 {
-	/* ライティング無効 */
+	/* ライティングを無効化 */
 	SetUseLighting(FALSE);
 
     /* カメラ設定 */

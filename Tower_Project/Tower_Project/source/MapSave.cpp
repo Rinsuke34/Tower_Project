@@ -5,7 +5,7 @@
 /* シーン"ゲームメイン"のマップセーブ部分の定義 */
 void Scene_World::MapSave()
 {
-    // 現在のマップデータを保存する(建造物のIDと座標を書き加えるので)
+    /* 現在のマップデータを保存する */
     int aiSaveMapData[MAP_SIZE_X][MAP_SIZE_Y][MAP_SIZE_Z];
 
     for (int iX = 0; iX < MAP_SIZE_X; iX++)
@@ -18,15 +18,15 @@ void Scene_World::MapSave()
             }
         }
     }
-
-    // オブジェクトの座標をマップデータに上書きする
+    
+    /* オブジェクトの座標をマップデータに上書きする */
 	for (const auto& object : pDataList_Object->aMapBuildingData)
 	{
         // オブジェクトのIDを座標に上書き
 		aiSaveMapData[object.stPosition.iX][object.stPosition.iY][object.stPosition.iZ] = object.iId;
 	}
 
-	// エネミーの座標をマップデータに上書きする
+	/* エネミーの座標をマップデータに上書きする */
 	for (const auto& character : pDataList_Object->paCharacterList)
 	{
 		// エネミーのIDを座標に上書き
@@ -40,7 +40,7 @@ void Scene_World::MapSave()
     /* JSONオブジェクトを用意 */
     nlohmann::json json;
 
-    // MapData[y][x][z] の3次元配列を保存
+    /* MapData[y][x][z]の3次元配列を保存 */
     for (int iY = 0; iY < MAP_SIZE_Y; iY++)
     {
         nlohmann::json layerX;

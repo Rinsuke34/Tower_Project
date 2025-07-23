@@ -24,7 +24,7 @@ void Scene_World::MapLoad()
         {
             for (int iZ = 0; iZ < MAP_SIZE_Z; iZ++)
             {
-				/* 3次元配列の値を設定 */
+				/* 3次元配列の値を取得 */
                 try
                 {
                     // 座標のIDを取得
@@ -72,9 +72,9 @@ void Scene_World::MapLoad()
 							break;
                     }
                 }
-                catch (const std::exception& ErrorCode)
+                catch (...)
                 {
-                    // 範囲外アクセス時の処理
+					// 対象の座標の値が存在しない場合、足場なしとして扱う
                     pDataList_Object->aiMapData[iX][iY][iZ] = 0;
                 }
             }

@@ -24,4 +24,5 @@ class Building_Base : public Object_Base
 		/* 変数 */
 		POSITION_3D_MAP	stMapPosition;		// 座標(マップ上の座標)
 		int				iFactionNo;			// 陣営番号
+		int				iModelHandle;		// モデルハンドル
 };
